@@ -1,0 +1,3 @@
+C:\Users\Erik\Documents\MEGA\Work\DTU\4. Semester\02141 Datalogisk Modellering\Projects\Calculator\02141PA\Task1\obj\Debug\net5.0\Task1.fsproj.AssemblyReference.cache
+C:\Users\Erik\Documents\MEGA\Work\DTU\4. Semester\02141 Datalogisk Modellering\Projects\Calculator\02141PA\Task1\obj\Debug\net5.0\Task1.AssemblyInfoInputs.cache
+C:\Users\Erik\Documents\MEGA\Work\DTU\4. Semester\02141 Datalogisk Modellering\Projects\Calculator\02141PA\Task1\obj\Debug\net5.0\Task1.AssemblyInfo.fs

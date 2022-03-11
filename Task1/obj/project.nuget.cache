@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "dK42GZWpkQP57VP4NKYv9Hz/dAeCPkacylox6IKq2ZspfoldUv3nYY+3FpKQnWucMJacyReF2f+Ls/zSPJMzCQ==",
+  "dgSpecHash": "ftaIkpUm1sKMlzU6GqakInFJn+IWSl0utat44yeRptWt/uh9UpTox+og2si6qz+6EdDgxs4o7v3rMyAAvhqM3Q==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Erik\\Documents\\MEGA\\Work\\DTU\\4. Semester\\02141 Datalogisk Modellering\\Projects\\Calculator\\Task1\\Task1.fsproj",
+  "projectFilePath": "C:\\Users\\Erik\\Documents\\MEGA\\Work\\DTU\\4. Semester\\02141 Datalogisk Modellering\\Projects\\Calculator\\02141PA\\Task1\\Task1.fsproj",
   "expectedPackageFiles": [
     "C:\\Users\\Erik\\.nuget\\packages\\fsharp.core\\5.0.0\\fsharp.core.5.0.0.nupkg.sha512"
   ],

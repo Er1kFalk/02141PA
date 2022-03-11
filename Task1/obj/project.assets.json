@@ -94,11 +94,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Erik\\Documents\\MEGA\\Work\\DTU\\4. Semester\\02141 Datalogisk Modellering\\Projects\\Calculator\\Task1\\Task1.fsproj",
+      "projectUniqueName": "C:\\Users\\Erik\\Documents\\MEGA\\Work\\DTU\\4. Semester\\02141 Datalogisk Modellering\\Projects\\Calculator\\02141PA\\Task1\\Task1.fsproj",
       "projectName": "Task1",
-      "projectPath": "C:\\Users\\Erik\\Documents\\MEGA\\Work\\DTU\\4. Semester\\02141 Datalogisk Modellering\\Projects\\Calculator\\Task1\\Task1.fsproj",
+      "projectPath": "C:\\Users\\Erik\\Documents\\MEGA\\Work\\DTU\\4. Semester\\02141 Datalogisk Modellering\\Projects\\Calculator\\02141PA\\Task1\\Task1.fsproj",
       "packagesPath": "C:\\Users\\Erik\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Erik\\Documents\\MEGA\\Work\\DTU\\4. Semester\\02141 Datalogisk Modellering\\Projects\\Calculator\\Task1\\obj\\",
+      "outputPath": "C:\\Users\\Erik\\Documents\\MEGA\\Work\\DTU\\4. Semester\\02141 Datalogisk Modellering\\Projects\\Calculator\\02141PA\\Task1\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Erik\\AppData\\Roaming\\NuGet\\NuGet.Config",

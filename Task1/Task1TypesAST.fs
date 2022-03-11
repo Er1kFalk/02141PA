@@ -38,7 +38,3 @@ and b =
 and guard = 
     | Bfunc of (b * command)
     | Twoguard of (guard * guard)
-
-type AST =
-    | T of (AST*AST)
-    | N of string

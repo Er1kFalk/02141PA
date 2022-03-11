@@ -66,6 +66,10 @@ expression:
   | VAR							  { X($1)}
   | LPAR expression RPAR          { $2 }
 
+guardedCommand:
+  | boolean BFUNCTION command				{Bfunc($1, $3)}
+  | guardedCommand TWOGUARD guardedCommand  {Twoguard($1, $3)}
+
 command:
   | VAR ASSIGN expression							{Assign($1,$3)}
   | VAR LSQPAR expression RSQPAR ASSIGN expression  {AssignArr($1, $3, $6)}
@@ -89,9 +93,7 @@ boolean:
   | expression LEQ expression		{Leq($1,$3)}
   | expression LT expression		{Lt($1,$3)}
 
-guardedCommand:
-  | boolean BFUNCTION command				{Bfunc($1, $3)}
-  | guardedCommand TWOGUARD guardedCommand  {Twoguard($1, $3)}
+
 
 // Again, the code annotation specifies the result of parsing
 // For example { TimesExpr($1,$3) } specifies that parsing with the production

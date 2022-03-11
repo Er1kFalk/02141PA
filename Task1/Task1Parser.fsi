@@ -78,9 +78,9 @@ type nonTerminalId =
     | NONTERM__startstart
     | NONTERM_start
     | NONTERM_expression
+    | NONTERM_guardedCommand
     | NONTERM_command
     | NONTERM_boolean
-    | NONTERM_guardedCommand
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int
 

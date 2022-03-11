@@ -26,10 +26,12 @@ rule tokenize = parse
 | newline       { lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf; }
 // deal with tokens that need to be built
 | num           { NUM(Int32.Parse(LexBuffer<_>.LexemeString lexbuf)) }
-| var			{ VAR(LexBuffer<_>.LexemeString lexbuf) }
+|  "if"			{IF}
+| "fi"			{FI}
 | '*'           { TIMES }
 | '/'           { DIV }
 | '+'           { PLUS }
+| "->"			{BFUNCTION}
 | '-'           { UMINUS}
 | '-'           { MINUS }
 | '^'           { POW }
@@ -38,11 +40,8 @@ rule tokenize = parse
 | ":="			{ ASSIGN }
 | "skip"		{ SKIP }
 | ';'           { COMMANDLIST}
-|  "if"			{IF}
-| "fi"			{FI}
 | "do"			{DO}
 | "od"			{OD}
-| "->"			{BFUNCTION}
 | "[]"			{TWOGUARD}
 | '['			{LSQPAR}
 | ']'			{RSQPAR}
@@ -60,3 +59,4 @@ rule tokenize = parse
 | "true"		{TRUE}
 | "false"		{FALSE}
 | eof           { EOF }
+| var			{ VAR(LexBuffer<_>.LexemeString lexbuf) }
