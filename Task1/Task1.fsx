@@ -1,7 +1,7 @@
 // This script implements our interactive calculator
 
 // We need to import a couple of modules, including the generated lexer and parser
-#r "C:/Users/Erik/.nuget/packages/fslexyacc/10.0.0/build/fsyacc/net46/FsLexYacc.Runtime.dll"
+#r "C:/Users/Harald/.nuget/packages/fslexyacc/10.0.0/build/fsyacc/net46/FsLexYacc.Runtime.dll"
 open FSharp.Text.Lexing
 open System
 #load "Task1TypesAST.fs"
@@ -80,28 +80,33 @@ let rec combinedguard x=
     | [x'] -> x'
     | x'::xs -> x' + " and " + (combinedguard xs) 
 
-let rec prettyprintGuard x n m l boollist= 
-    match x with
+let rec prettyprintGuard gc beginnode nextnode l boollist= 
+    match gc with
     | Bfunc (b, c) -> 
-        let newlist = (prettyprinter c (n+1) m (l))
-        let newlist2 = (prettyprinterPretext n (m) (prettyprintBool b), n)::newlist
+        let newlist = (prettyprinter c beginnode (nextnode+1) (l))
+        let newlist2 = (prettyprinterPretext beginnode (nextnode+1) (prettyprintBool b), beginnode)::newlist
         let not = prettyprintBool (Not b)
         (not::boollist,newlist2)
     | Twoguard (g1, g2) -> 
-                           let (bool,firstguard) =(prettyprintGuard g1 n m l boollist) 
-                           prettyprintGuard g2 n ((max firstguard) + 1) firstguard bool
-and prettyprinter x (num:int) (m:int) list=
+                           let (bool,firstguard) =(prettyprintGuard g1 beginnode nextnode l boollist) 
+                           
+                           let (bool2,secondguard)=prettyprintGuard g2 (beginnode) (max firstguard) [] bool
+                           let returnback1 = (prettyprinterPretext (max(firstguard)) (max(secondguard)) "skip",0)
+                           (bool2, firstguard@(returnback1::secondguard))
+and prettyprinter x (beginnode:int) (nextnode:int) list=
     match x with
-    | Assign(x',y') -> ((prettyprinterPretext m (m+1)) (x'+":="+ prettyprintExp y'),num+1)::list
-    | AssignArr(x',y,z')-> ((prettyprinterPretext m (m+1)) (x' + prettyprintExp y + ":=" + prettyprintExp z'),num)::list
-    | CommandList(x',y')   -> let lx = prettyprinter x' num (m) []
-                              let ly = (prettyprinter y' (max lx) (max lx) list)
+    | Assign(x',y') -> ((prettyprinterPretext nextnode (nextnode+1)) (x'+":="+ prettyprintExp y'),nextnode+1)::list
+    | AssignArr(x',y,z')-> ((prettyprinterPretext nextnode (nextnode+1)) (x' + prettyprintExp y + ":=" + prettyprintExp z'),nextnode)::list
+    | CommandList(x',y')   -> let lx = prettyprinter x' beginnode nextnode []
+                              let ly = (prettyprinter y' beginnode (max lx) list)
                               lx @ ly
-    | Ifstate(x') -> let (bool,list) = prettyprintGuard x' num (max list + 1) list []
-                     (prettyprinterPretext num (max list+1) (combinedguard(bool)),max(list))::list                                    
-    | Dostate(x') -> let (bool,list) = prettyprintGuard x' num (max list + 1) list []
-                     (prettyprinterPretext num (max list+1) (combinedguard(bool)),max(list))::list                                    
-
+    | Ifstate(x') -> let (bool,list) = prettyprintGuard x' beginnode (nextnode) list []
+                     let boollist= (prettyprinterPretext beginnode (max list+1) (combinedguard(bool)),max(list))::list 
+                     boollist               
+    | Dostate(x') -> let (bool,list) = prettyprintGuard x' beginnode (nextnode) list []
+                     let boollist= (prettyprinterPretext beginnode (nextnode+1) (combinedguard(bool)),max(list))::list 
+                     let skip = (prettyprinterPretext (max list+1) (beginnode) "skip",(max(list)+1))
+                     skip::boollist   
 
 
 
@@ -130,12 +135,17 @@ let rec readAll s =
 let rec print  x =
     match x with
     | [] -> Console.WriteLine("")
-    | (x':String,y')::xs -> Console.WriteLine(x')
-                            print xs
+    | (x':String,y')::xs -> Console.WriteLine(x') 
+                            print xs 
 
 let parseAll =
     let string = parse (readAll (Console.ReadLine()))
     //Console.WriteLine (string)
-    print (prettyprinter string 0 0 [])
+    let result =prettyprinter string 0 1 [] 
+    let (endpoint:int) = max(result)
+    print result
+   
 
 parseAll;;
+
+// Console.WriteLine ("q>"+ (string(endpoint)) + " -> q< [label= skip ];")
