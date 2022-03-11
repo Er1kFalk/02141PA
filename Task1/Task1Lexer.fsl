@@ -32,7 +32,6 @@ rule tokenize = parse
 | '/'           { DIV }
 | '+'           { PLUS }
 | "->"			{BFUNCTION}
-| '-'           { UMINUS}
 | '-'           { MINUS }
 | '^'           { POW }
 | '('           { LPAR }

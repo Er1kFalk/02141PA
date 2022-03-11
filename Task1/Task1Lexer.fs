@@ -120,7 +120,7 @@ let trans : uint16[] array =
     (* State 53 *)
      [| 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; |];
     |] 
-let actions : uint16[] = [|65535us; 0us; 0us; 1us; 2us; 36us; 36us; 5us; 6us; 7us; 9us; 11us; 12us; 13us; 65535us; 36us; 16us; 36us; 36us; 20us; 21us; 23us; 25us; 27us; 28us; 30us; 32us; 36us; 35us; 36us; 36us; 36us; 36us; 33us; 31us; 29us; 26us; 24us; 22us; 19us; 18us; 17us; 36us; 36us; 15us; 14us; 8us; 4us; 36us; 36us; 36us; 34us; 3us; 2us; |]
+let actions : uint16[] = [|65535us; 0us; 0us; 1us; 2us; 35us; 35us; 5us; 6us; 7us; 9us; 10us; 11us; 12us; 65535us; 35us; 15us; 35us; 35us; 19us; 20us; 22us; 24us; 26us; 27us; 29us; 31us; 35us; 34us; 35us; 35us; 35us; 35us; 32us; 30us; 28us; 25us; 23us; 21us; 18us; 17us; 16us; 35us; 35us; 14us; 13us; 8us; 4us; 35us; 35us; 35us; 33us; 3us; 2us; |]
 let _fslex_tables = FSharp.Text.Lexing.UnicodeTables.Create(trans,actions)
 let rec _fslex_dummy () = _fslex_dummy() 
 // Rule tokenize
@@ -173,143 +173,138 @@ and tokenize  lexbuf =
           )
   | 9 -> ( 
 # 35 "Task1Lexer.fsl"
-                                 UMINUS
+                                 MINUS 
 # 177 "Task1Lexer.fs"
           )
   | 10 -> ( 
 # 36 "Task1Lexer.fsl"
-                                 MINUS 
+                                 POW 
 # 182 "Task1Lexer.fs"
           )
   | 11 -> ( 
 # 37 "Task1Lexer.fsl"
-                                 POW 
+                                 LPAR 
 # 187 "Task1Lexer.fs"
           )
   | 12 -> ( 
 # 38 "Task1Lexer.fsl"
-                                 LPAR 
+                                 RPAR 
 # 192 "Task1Lexer.fs"
           )
   | 13 -> ( 
 # 39 "Task1Lexer.fsl"
-                                 RPAR 
+                          ASSIGN 
 # 197 "Task1Lexer.fs"
           )
   | 14 -> ( 
 # 40 "Task1Lexer.fsl"
-                          ASSIGN 
+                           SKIP 
 # 202 "Task1Lexer.fs"
           )
   | 15 -> ( 
 # 41 "Task1Lexer.fsl"
-                           SKIP 
+                                 COMMANDLIST
 # 207 "Task1Lexer.fs"
           )
   | 16 -> ( 
 # 42 "Task1Lexer.fsl"
-                                 COMMANDLIST
+                         DO
 # 212 "Task1Lexer.fs"
           )
   | 17 -> ( 
 # 43 "Task1Lexer.fsl"
-                         DO
+                         OD
 # 217 "Task1Lexer.fs"
           )
   | 18 -> ( 
 # 44 "Task1Lexer.fsl"
-                         OD
+                         TWOGUARD
 # 222 "Task1Lexer.fs"
           )
   | 19 -> ( 
 # 45 "Task1Lexer.fsl"
-                         TWOGUARD
+                        LSQPAR
 # 227 "Task1Lexer.fs"
           )
   | 20 -> ( 
 # 46 "Task1Lexer.fsl"
-                        LSQPAR
+                        RSQPAR
 # 232 "Task1Lexer.fs"
           )
   | 21 -> ( 
 # 47 "Task1Lexer.fsl"
-                        RSQPAR
+                                DAND
 # 237 "Task1Lexer.fs"
           )
   | 22 -> ( 
 # 48 "Task1Lexer.fsl"
-                                DAND
+                        AND
 # 242 "Task1Lexer.fs"
           )
   | 23 -> ( 
 # 49 "Task1Lexer.fsl"
-                        AND
+                         DOR
 # 247 "Task1Lexer.fs"
           )
   | 24 -> ( 
 # 50 "Task1Lexer.fsl"
-                         DOR
+                        OR
 # 252 "Task1Lexer.fs"
           )
   | 25 -> ( 
 # 51 "Task1Lexer.fsl"
-                        OR
+                         NOTEQUAL
 # 257 "Task1Lexer.fs"
           )
   | 26 -> ( 
 # 52 "Task1Lexer.fsl"
-                         NOTEQUAL
+                        NOT
 # 262 "Task1Lexer.fs"
           )
   | 27 -> ( 
 # 53 "Task1Lexer.fsl"
-                        NOT
+                        EQUAL
 # 267 "Task1Lexer.fs"
           )
   | 28 -> ( 
 # 54 "Task1Lexer.fsl"
-                        EQUAL
+                         GEQ
 # 272 "Task1Lexer.fs"
           )
   | 29 -> ( 
 # 55 "Task1Lexer.fsl"
-                         GEQ
+                                GT
 # 277 "Task1Lexer.fs"
           )
   | 30 -> ( 
 # 56 "Task1Lexer.fsl"
-                                GT
+                                LEQ
 # 282 "Task1Lexer.fs"
           )
   | 31 -> ( 
 # 57 "Task1Lexer.fsl"
-                                LEQ
+                                LT
 # 287 "Task1Lexer.fs"
           )
   | 32 -> ( 
 # 58 "Task1Lexer.fsl"
-                                LT
+                          TRUE
 # 292 "Task1Lexer.fs"
           )
   | 33 -> ( 
 # 59 "Task1Lexer.fsl"
-                          TRUE
+                           FALSE
 # 297 "Task1Lexer.fs"
           )
   | 34 -> ( 
 # 60 "Task1Lexer.fsl"
-                           FALSE
+                                 EOF 
 # 302 "Task1Lexer.fs"
           )
   | 35 -> ( 
 # 61 "Task1Lexer.fsl"
-                                 EOF 
-# 307 "Task1Lexer.fs"
-          )
-  | 36 -> ( 
-# 62 "Task1Lexer.fsl"
                          VAR(LexBuffer<_>.LexemeString lexbuf) 
-# 312 "Task1Lexer.fs"
+# 307 "Task1Lexer.fs"
           )
   | _ -> failwith "tokenize"
 

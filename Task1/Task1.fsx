@@ -150,6 +150,6 @@ let run x=
     let endpoint = max(result)  //last node used
     print ((("q>-> q1[label= begin ];",0  )::result)@ [("q" + (sprintf "%i" endpoint) + "-> q<[label= end ];",0  )] ) // generates beginning node and endnode
    
-//let parseAll = run (readAll (Console.ReadLine()))
+let parseAll = run (readAll (Console.ReadLine()))
 
 // Console.WriteLine ("q>"+ (string(endpoint)) + " -> q< [label= skip ];")
