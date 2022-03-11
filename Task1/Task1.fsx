@@ -30,9 +30,11 @@ open Task1Lexer
 //    | _ -> x*(pow x (y-1))
 
 // get max of list
-let rec max l = match l with
-    | [] -> 0
-    | (_, y')::xs -> if y' > (max xs) then y' else max xs
+let rec max l =
+   match l with
+   | [] -> 0
+   | (_, y')::xs -> if y' > (max xs) then y' else max xs
+
 // We
 let parse input =
     // translate string into a buffer of characters
@@ -53,6 +55,7 @@ let rec prettyprintExp x  =
     | MinusExpr (a, b) -> (prettyprintExp a) + "-" + (prettyprintExp b)
     | PowExpr (a, b) -> (prettyprintExp a) + "^(" + (prettyprintExp b) + ")"
     | UMinusExpr (a) -> "-" + (prettyprintExp a)
+    | UPlusExpr (a) -> "+" + (prettyprintExp a)
 
 let rec prettyprintBool x = 
     match x with
@@ -86,7 +89,7 @@ let rec prettyprintGuard gc beginnode nextnode l boollist=
         let newlist = (prettyprinter c beginnode (nextnode+1) (l))
         let newlist2 = (prettyprinterPretext beginnode (nextnode+1) (prettyprintBool b), beginnode)::newlist
         let not = prettyprintBool (Not b)
-        (not::boollist,newlist2)
+        (boollist@[not],newlist2)
     | Twoguard (g1, g2) -> 
                            let (bool,firstguard) =(prettyprintGuard g1 beginnode nextnode l boollist) 
                            
@@ -104,9 +107,10 @@ and prettyprinter x (beginnode:int) (nextnode:int) list=
                      let boollist= (prettyprinterPretext beginnode (max list+1) (combinedguard(bool)),max(list))::list 
                      boollist               
     | Dostate(x') -> let (bool,list) = prettyprintGuard x' beginnode (nextnode) list []
-                     let boollist= (prettyprinterPretext beginnode (nextnode+1) (combinedguard(bool)),max(list))::list 
-                     let skip = (prettyprinterPretext (max list+1) (beginnode) "skip",(max(list)+1))
-                     skip::boollist   
+                     let boollist= (prettyprinterPretext beginnode (max list+1) (combinedguard(bool)),max(list)+1)::list 
+                     let skip = (prettyprinterPretext (max list) (beginnode) "skip",(max(list)+1))
+                     boollist@[skip]   
+    | Skip -> ((prettyprinterPretext nextnode (nextnode+1)) ("skip"),nextnode+1)::list
 
 
 
@@ -138,14 +142,14 @@ let rec print  x =
     | (x':String,y')::xs -> Console.WriteLine(x') 
                             print xs 
 
-let parseAll =
-    let string = parse (readAll (Console.ReadLine()))
-    //Console.WriteLine (string)
-    let result =prettyprinter string 0 1 [] 
-    let (endpoint:int) = max(result)
-    print result
+let run x=
+    let string = parse x
+    Console.WriteLine (string)
+    Console.WriteLine "" 
+    let result =prettyprinter string 1 1 [] 
+    let endpoint = max(result)  //last node used
+    print ((("q>-> q1[label= begin ];",0  )::result)@ [("q" + (sprintf "%i" endpoint) + "-> q<[label= end ];",0  )] ) // generates beginning node and endnode
    
-
-parseAll;;
+let parseAll = run (readAll (Console.ReadLine()))
 
 // Console.WriteLine ("q>"+ (string(endpoint)) + " -> q< [label= skip ];")
