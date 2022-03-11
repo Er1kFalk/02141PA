@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <WarnOn>3390;$(WarnOn)</WarnOn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Task1Lexer.fs" />
+    <Compile Include="Task1Parser.fs" />
+    <Compile Include="Task1Parser.fsi" />
+    <Compile Include="Task1TypesAST.fs" />
+    <None Include="Task1.fsx" />
+    <None Include="Task1Lexer.fsl" />
+    <None Include="Task1Parser.fsp" />
+  </ItemGroup>
+
+  <ItemGroup />
+
+</Project>
