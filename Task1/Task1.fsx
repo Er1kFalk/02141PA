@@ -47,7 +47,7 @@ let parse input =
 let rec prettyprintExp x  = 
     match x with
     | Num(n) -> string n
-    | X(s) -> s
+    | X(s) -> s+""
     | Arr (s, exp) -> s + "[" + (prettyprintExp exp) + "]"
     | TimesExpr (a, b) -> (prettyprintExp a) + "*" + (prettyprintExp b)
     | DivExpr (a, b) ->  (prettyprintExp a) + "/" + (prettyprintExp b)
@@ -146,10 +146,10 @@ let run x=
     let string = parse x
     Console.WriteLine (string)
     Console.WriteLine "" 
-    let result =prettyprinter string 1 1 [] 
+    let result =prettyprinter string 0 0 [] 
     let endpoint = max(result)  //last node used
     print ((("q>-> q1[label= begin ];",0  )::result)@ [("q" + (sprintf "%i" endpoint) + "-> q<[label= end ];",0  )] ) // generates beginning node and endnode
    
-let parseAll = run (readAll (Console.ReadLine()))
+//let parseAll = run (readAll (Console.ReadLine()))
 
 // Console.WriteLine ("q>"+ (string(endpoint)) + " -> q< [label= skip ];")
