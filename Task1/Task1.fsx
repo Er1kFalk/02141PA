@@ -56,6 +56,7 @@ let rec prettyprintExp x  =
     | PowExpr (a, b) -> (prettyprintExp a) + "^(" + (prettyprintExp b) + ")"
     | UMinusExpr (a) -> "-" + (prettyprintExp a)
     | UPlusExpr (a) -> "+" + (prettyprintExp a)
+    | Apar(a) -> prettyprintExp a
 
 let rec prettyprintBool x = 
     match x with
@@ -72,6 +73,7 @@ let rec prettyprintBool x =
     | Gt (a, b) -> (prettyprintExp a) + ">" + (prettyprintExp b)
     | Lt (a, b) -> (prettyprintExp a) + "<" + (prettyprintExp b)
     | Leq (a, b) -> (prettyprintExp a) + "<=" + (prettyprintExp b)
+    | Par (a) -> prettyprintBool a
 
 let prettyprinterPretext (num:int) (num2:int) (label:string) =
     if (num=0) then "q▷-> q" + string(num2) + "[label= " + label + "];"
@@ -100,8 +102,8 @@ and prettyprinter x (beginnode:int) (nextnode:int) list=
     match x with
     | Assign(x',y') -> ((prettyprinterPretext nextnode (nextnode+1)) (x'+":="+ prettyprintExp y'),nextnode+1)::list
     | AssignArr(x',y,z')-> ((prettyprinterPretext nextnode (nextnode+1)) (x' + prettyprintExp y + ":=" + prettyprintExp z'),nextnode)::list
-    | CommandList(x',y')   -> let lx = prettyprinter x' beginnode nextnode []
-                              let ly = (prettyprinter y' beginnode (max lx) list)
+    | CommandList(x',y')   -> let lx = prettyprinter x' beginnode nextnode list
+                              let ly = (prettyprinter y' (max lx) (max lx) [])
                               lx @ ly
     | Ifstate(x') -> let (bool,list) = prettyprintGuard x' beginnode (nextnode) list []
                      let boollist= (prettyprinterPretext beginnode (max list+1) (combinedguard(bool)),max(list))::list 
@@ -146,10 +148,10 @@ let run x=
     let string = parse x
     Console.WriteLine (string)
     Console.WriteLine "" 
-    let result =prettyprinter string 0 0 [] 
+    let result =prettyprinter string 1 1 [] 
     let endpoint = max(result)  //last node used
-    print ((("q>-> q1[label= begin ];",0  )::result)@ [("q" + (sprintf "%i" endpoint) + "-> q<[label= end ];",0  )] ) // generates beginning node and endnode
+    print ((("q▷-> q1[label= begin ];",0  )::result)@ [("q" + (sprintf "%i" endpoint) + "-> q<[label= end ];",0  )] ) // generates beginning node and endnode
    
-let parseAll = run (readAll (Console.ReadLine()))
+//let parseAll = run (readAll (Console.ReadLine()))
 
 // Console.WriteLine ("q>"+ (string(endpoint)) + " -> q< [label= skip ];")
