@@ -162,21 +162,100 @@ let rec print  x =
 //    Console.WriteLine string
 //    Console.WriteLine (prettyprintCommand string)
 
+let rec pow x n = match n with
+                   | 0 -> 1
+                   | n when n>0 -> x*(pow x (n-1))
+                   | n -> failwith "n should not be negative"
+
+let rec evalExpression expr vars arrs = match expr with
+    | Num (x) -> x
+    | X (s) -> let var = getValueVars s vars
+               match var with
+               | None -> failwith "Variable not defined"
+               | Some(x) -> x
+    | Arr (s, i) -> let arr = getValueArrs s (evalExpression i vars arrs) arrs
+                    match arr with
+                    | None -> failwith "Array variable not defined"
+                    | Some(x) -> x
+    | TimesExpr (e1, e2) -> (evalExpression e1 vars arrs) * (evalExpression e2 vars arrs)
+    | DivExpr  (e1, e2) -> (evalExpression e1 vars arrs) / (evalExpression e2 vars arrs)
+    | PlusExpr  (e1, e2) -> (evalExpression e1 vars arrs) + (evalExpression e2 vars arrs)
+    | MinusExpr  (e1, e2) -> (evalExpression e1 vars arrs) - (evalExpression e2 vars arrs)
+    | PowExpr  (e1, e2) -> pow (evalExpression e1 vars arrs) (evalExpression e2 vars arrs)
+    | UPlusExpr  (e1) -> (evalExpression e1 vars arrs)
+    | UMinusExpr  (e1) -> -(evalExpression e1 vars arrs)
+    | APar (e1) -> (evalExpression e1 vars arrs)
+
+and assignVar x y vars = match vars with
+                            | [] -> [(x, y)]
+                            | (x', y')::xs when x' = x -> (x', y')::xs
+                            | (x', y')::xs -> (x', y')::(assignVar x y xs)
+
+and assignArr x i y vars arrs = match arrs with
+                                    | [] -> [((x, i), y)]
+                                    | ((x', i'), y')::xs when x'=x && i'=i -> ((x', i'), y')::xs
+                                    | ((x', i'), y')::xs -> ((x', i'), y')::(assignArr x i y vars xs)
+
+
+and getValueVars x vars = match vars with
+                            | [] -> None
+                            | (x', y')::_ when x' = x -> Some y'
+                            | _::xs -> getValueVars x xs
+
+and getValueArrs x i arrs = match arrs with
+                             | [] -> None
+                             | ((x', i'), y')::_ when (x', i') = (x, i)-> Some y'
+                             | _::xs -> getValueArrs x i xs
+
+let rec evaluateCommand c vars arrs = 
+    match c with
+    | Assign (s, a) -> (assignVar s (evalExpression a vars arrs) vars, arrs)
+    | AssignArr (s, i, a) ->  (vars, assignArr s (evalExpression i vars arrs) (evalExpression a vars arrs) vars arrs)
+    | CommandList (c1, c2) -> let (vars1, arrs1) = evaluateCommand c1 vars arrs
+                              evaluateCommand c2 vars1 arrs1
+    | Ifstate g | Dostate g -> evalGuard g vars arrs
+and evalGuard g vars arrs = match g with
+                        | Bfunc (b, c) when (evalBool b) -> evaluateCommand c vars arrs
+                        | Twoguard (g1, g2) -> let (vars1, arrs1) = (evalGuard g1 vars arrs)
+                                               evalGuard g2 vars1 arrs1
+and evalBool b vars arrs = match b with
+    | True -> true
+    | False -> false
+    | And (b1, b2) when (evalBool b1 vars arrs) -> (evalBool b2 vars arrs)
+    | DAnd (b1, b2) -> (evalBool b1 vars arrs) && (evalBool b2 vars arrs)
+    | Or (b1, b2) when (evalBool b1 vars arrs) -> true
+    | DOr (b1, b2) -> (evalBool b1 vars arrs) || (evalBool b2 vars arrs)
+    
+
+    | Not of (b)
+    | Equal of (aexpr * aexpr)
+    | NotEqual of (aexpr * aexpr)
+    | Geq of (aexpr * aexpr)
+    | Gt of (aexpr * aexpr)
+    | Lt of (aexpr * aexpr)
+    | Leq of (aexpr * aexpr)
+    | ParB of (b) 
 
 
 
-let run =
-    Console.WriteLine("Enter your favorite GCL expression: ")
-    let string = parse (readAll (Console.ReadLine()) + "\n") // parse input
-    Console.WriteLine (string) // print AST
-    Console.WriteLine (prettyprintCommand string) // print result parsed back
-    Console.WriteLine "" 
-    // print program graph
-    let result =pgPrinter string 1 1 [] 
-    let endpoint = max(result)  //last node used
-    print ((("q▷-> q1[label= begin ];",0  )::result)@ [("q" + (sprintf "%i" endpoint) + "-> q<[label= end ];",0  )] ) // generates beginning node and endnode
+     
+
+//let run =
+    
+//    Console.WriteLine("Enter your favorite GCL expression: ")
+//    let string = parse (readAll (Console.ReadLine()) + "\n") // parse input
+//    Console.WriteLine (string) // print AST
+//    Console.WriteLine (prettyprintCommand string) // print result parsed back
+//    Console.WriteLine "" 
+//    // print program graph
+//    let result =pgPrinter string 1 1 [] 
+//    let endpoint = max(result)  //last node used
+//    print ((("q▷-> q1[label= begin ];",0  )::result)@ [("q" + (sprintf "%i" endpoint) + "-> q<[label= end ];",0  )] ) // generates beginning node and endnode
    
-run;;
+//run;;
+let initVals = evaluateCommand (parse (Console.ReadLine())) [] []
+Console.WriteLine(initVals)
+
 
 // Console.WriteLine ("q>"+ (string(endpoint)) + " -> q< [label= skip ];")
 
