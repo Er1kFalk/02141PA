@@ -156,24 +156,27 @@ let rec print  x =
     | (x':String,y')::xs -> Console.WriteLine(x')
                             print xs
 
-let parseAll =
-    Console.Write("Enter your favorite GCL expression: ")
-    let string = parse (readAll (Console.ReadLine()))
-    Console.WriteLine string
-    Console.WriteLine (prettyprintCommand string)
+//let parseAll =
+//    Console.Write("Enter your favorite GCL expression: ")
+//    let string = parse (readAll (Console.ReadLine()))
+//    Console.WriteLine string
+//    Console.WriteLine (prettyprintCommand string)
 
 
 
 
-let run x=
-    let string = parse x
-    Console.WriteLine (string)
+let run =
+    Console.WriteLine("Enter your favorite GCL expression: ")
+    let string = parse (readAll (Console.ReadLine()) + "\n") // parse input
+    Console.WriteLine (string) // print AST
+    Console.WriteLine (prettyprintCommand string) // print result parsed back
     Console.WriteLine "" 
+    // print program graph
     let result =pgPrinter string 1 1 [] 
     let endpoint = max(result)  //last node used
     print ((("q▷-> q1[label= begin ];",0  )::result)@ [("q" + (sprintf "%i" endpoint) + "-> q<[label= end ];",0  )] ) // generates beginning node and endnode
    
-run (readAll (Console.ReadLine()))
+run;;
 
 // Console.WriteLine ("q>"+ (string(endpoint)) + " -> q< [label= skip ];")
 
