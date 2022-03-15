@@ -17,9 +17,6 @@ let whitespace  = [' ' '\t' '\t' '\n']
 let newline     = "\n\r" | '\n' | '\r'
 
 // We define now the rules for recognising and building tokens
-// for each of the tokens of our language we need a rule
-// NOTE: rules are applied in order top-down.
-//       This is important when tokens overlap (not in this example)
 rule tokenize = parse
 // deal with tokens that need to be ignored (skip them)
 | whitespace    { tokenize lexbuf }
@@ -28,20 +25,19 @@ rule tokenize = parse
 | num           { NUM(Int32.Parse(LexBuffer<_>.LexemeString lexbuf)) }
 |  "if"			{IF}
 | "fi"			{FI}
+| "do"			{DO}
+| "od"			{OD}
 | '*'           { TIMES }
 | '/'           { DIV }
 | '+'           { PLUS }
 | "->"			{BFUNCTION}
-| '-'           { UMINUS}
 | '-'           { MINUS }
 | '^'           { POW }
 | '('           { LPAR }
 | ')'           { RPAR }
 | ":="			{ ASSIGN }
 | "skip"		{ SKIP }
-| ';'           { COMMANDLIST}
-| "do"			{DO}
-| "od"			{OD}
+| ';' | ";\n"   { COMMANDLIST}
 | "[]"			{TWOGUARD}
 | '['			{LSQPAR}
 | ']'			{RSQPAR}
@@ -58,5 +54,5 @@ rule tokenize = parse
 | '<'           {LT}
 | "true"		{TRUE}
 | "false"		{FALSE}
-| eof           { EOF }
 | var			{ VAR(LexBuffer<_>.LexemeString lexbuf) }
+| eof           { EOF }

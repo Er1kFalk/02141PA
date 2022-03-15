@@ -12,6 +12,7 @@ type aexpr =
   | PowExpr of (aexpr * aexpr)
   | UPlusExpr of (aexpr)
   | UMinusExpr of (aexpr)
+  | APar of (aexpr)
 
 
 type command = 
@@ -35,6 +36,7 @@ and b =
     | Gt of (aexpr * aexpr)
     | Lt of (aexpr * aexpr)
     | Leq of (aexpr * aexpr)
+    | ParB of (b)
 and guard = 
     | Bfunc of (b * command)
     | Twoguard of (guard * guard)
