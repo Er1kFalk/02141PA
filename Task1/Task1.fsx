@@ -1,7 +1,7 @@
 // This script implements our interactive calculator
 
 // We need to import a couple of modules, including the generated lexer and parser
-#r "C:/Users/Erik/.nuget/packages/fslexyacc/10.0.0/build/fsyacc/net46/FsLexYacc.Runtime.dll"
+#r "C:/Users/Harald/.nuget/packages/fslexyacc/10.0.0/build/fsyacc/net46/FsLexYacc.Runtime.dll"
 open FSharp.Text.Lexing
 open System
 #load "Task1TypesAST.fs"
@@ -11,6 +11,8 @@ open Task1Parser
 #load "Task1Lexer.fs"
 open Task1Lexer
 
+
+type EvalList = List<string*(List<(String*int)>*List<((String*int)*int)>)>
 // We define the evaluation function recursively, by induction on the structure
 // of arithmetic expressions (AST of type expr)
 //let rec evalExp e =
@@ -29,12 +31,19 @@ open Task1Lexer
 //    | _ -> x*(pow x (y-1))
 
 // get max of list
+
 let rec max l =
    match l with
    | [] -> 0
    | (_, y')::xs -> if y' > (max xs) then y' else max xs
+let rec max2 l =
+   match l with
+   | [] -> 0
+   | (_, y',_)::xs -> if y' > (max2 xs) then y' else max2 xs
+
 
 // We
+
 let parse input =
     // translate string into a buffer of characters
     let lexbuf = LexBuffer<char>.FromString input
@@ -98,7 +107,7 @@ let rec combinedguard x=
     | [x'] -> x'
     | x'::xs -> x' + " and " + (combinedguard xs) 
 
-let rec pgPrintGuard gc beginnode nextnode l boollist= 
+(* let rec pgPrintGuard gc beginnode nextnode l boollist= 
     match gc with
     | Bfunc (b, c) -> 
         let newlist = (pgPrinter c beginnode (nextnode+1) (l))
@@ -125,25 +134,52 @@ and pgPrinter x (beginnode:int) (nextnode:int) list=
                      let boollist= (prettyprinterPretext beginnode (max list+1) (combinedguard(bool)),max(list)+1)::list 
                      let skip = (prettyprinterPretext (max list) (beginnode) "skip",(max(list)+1))
                      boollist@[skip]   
-    | Skip -> ((prettyprinterPretext nextnode (nextnode+1)) ("skip"),nextnode+1)::list
+    | Skip -> ((prettyprinterPretext nextnode (nextnode+1)) ("skip"),nextnode+1)::list *)
+and pgc x (beginnode:int) (nextnode:int) list=
+    match x with
+    | Assign(x',y') -> (nextnode, (nextnode+1), (x'+":="+ prettyprintExp y'))::list
+    | AssignArr(x',y,z')-> (nextnode, (nextnode+1), (x' + prettyprintExp y + ":=" + prettyprintExp z'))::list
+    | CommandList(x',y')   -> let lx = pgc x' beginnode nextnode list
+                              let ly = (pgc y' (max2 lx) (max2 lx) [])
+                              lx @ ly
+    | Ifstate(x') -> let (bool,list) = pgg x' nextnode (nextnode) list []
+                     let boollist= ( (beginnode, ((max2 list)+1), (combinedguard(bool)))::list )
+                     boollist               
+    | Dostate(x') -> let (bool,list) = pgg x' nextnode (nextnode) list []
+                     let boollist= ( (beginnode, (max2 list+1), (combinedguard(bool)) )::list )
+                     let skip = ((max2 list), (beginnode), "skip")
+                     boollist@[skip]   
+    | Skip -> (nextnode, (nextnode+1), ("skip"))::list
+and pgg gc beginnode nextnode l boollist= 
+    match gc with
+    | Bfunc (b, c) -> 
+        let newlist = (pgc c beginnode (nextnode+1) (l))
+        let newlist2 = (beginnode, (nextnode+1), (prettyprintBool b))::newlist
+        let not = prettyprintBool (Not b)
+        (boollist@[not],newlist2)
+    | Twoguard (g1, g2) -> 
+                           let (bool,firstguard) =(pgg g1 beginnode nextnode l boollist) 
+                           
+                           let (bool2,secondguard)=pgg g2 (beginnode) (max2 firstguard) [] bool
+                           let returnback1 = ((max2(firstguard)), (max2(secondguard)), "skip")
+                           (bool2, firstguard@(returnback1::secondguard))
 
 
+(* We implement here the function that interacts with the user
+let rec compute n =
+   if n = 0 then
+       printfn "Bye bye"
+   else
+       printf "Enter an arithmetic expression: "
+       try
+       // We parse the input string
+       let e = parse (Console.ReadLine())
+       // and print the result of evaluating it
+       printfn "Result: %d" (eval(e))
+       compute n
+       with err -> compute (n-1)
 
-// We implement here the function that interacts with the user
-//let rec compute n =
-//    if n = 0 then
-//        printfn "Bye bye"
-//    else
-//        printf "Enter an arithmetic expression: "
-//        try
-//        // We parse the input string
-//        let e = parse (Console.ReadLine())
-//        // and print the result of evaluating it
-//        printfn "Result: %d" (eval(e))
-//        compute n
-//        with err -> compute (n-1)
-
-// Start interacting with the user
+Start interacting with the user *)
 
 let rec readAll s = 
     match s with
@@ -153,21 +189,23 @@ let rec readAll s =
 let rec print  x =
     match x with
     | [] -> Console.WriteLine("")
-    | (x':String,y')::xs -> Console.WriteLine(x')
-                            print xs
+    | (x',y',(z':string))::xs -> Console.WriteLine (prettyprinterPretext x' y' z')
+                                 print xs
 
-//let parseAll =
-//    Console.Write("Enter your favorite GCL expression: ")
-//    let string = parse (readAll (Console.ReadLine()))
-//    Console.WriteLine string
-//    Console.WriteLine (prettyprintCommand string)
 
+(* let parseAll =
+   Console.Write("Enter your favorite GCL expression: ")
+   let string = parse (readAll (Console.ReadLine()))
+   Console.WriteLine string
+   Console.WriteLine (prettyprintCommand string)
+ *)
 let rec pow x n = match n with
                    | 0 -> 1
                    | n when n>0 -> x*(pow x (n-1))
                    | n -> failwith "n should not be negative"
 
-let rec evalExpression expr vars arrs = match expr with
+let rec evalExpression expr vars arrs = 
+    match expr with
     | Num (x) -> x
     | X (s) -> let var = getValueVars s vars
                match var with
@@ -188,12 +226,12 @@ let rec evalExpression expr vars arrs = match expr with
 
 and assignVar x y vars = match vars with
                             | [] -> [(x, y)]
-                            | (x', y')::xs when x' = x -> (x', y')::xs
+                            | (x', y')::xs when x' = x -> (x', y)::xs
                             | (x', y')::xs -> (x', y')::(assignVar x y xs)
 
 and assignArr x i y vars arrs = match arrs with
                                     | [] -> [((x, i), y)]
-                                    | ((x', i'), y')::xs when x'=x && i'=i -> ((x', i'), y')::xs
+                                    | ((x', i'), y')::xs when x'=x && i'=i -> ((x', i'), y)::xs
                                     | ((x', i'), y')::xs -> ((x', i'), y')::(assignArr x i y vars xs)
 
 
@@ -207,57 +245,90 @@ and getValueArrs x i arrs = match arrs with
                              | ((x', i'), y')::_ when (x', i') = (x, i)-> Some y'
                              | _::xs -> getValueArrs x i xs
 
-let rec evaluateCommand c vars arrs = 
+let rec evaluateCommand c vars arrs (evaluationsteps:EvalList) = 
     match c with
-    | Assign (s, a) -> (assignVar s (evalExpression a vars arrs) vars, arrs)
-    | AssignArr (s, i, a) ->  (vars, assignArr s (evalExpression i vars arrs) (evalExpression a vars arrs) vars arrs)
-    | CommandList (c1, c2) -> let (vars1, arrs1) = evaluateCommand c1 vars arrs
-                              evaluateCommand c2 vars1 arrs1
-    | Ifstate g | Dostate g -> evalGuard g vars arrs
-and evalGuard g vars arrs = match g with
-                        | Bfunc (b, c) when (evalBool b) -> evaluateCommand c vars arrs
-                        | Twoguard (g1, g2) -> let (vars1, arrs1) = (evalGuard g1 vars arrs)
-                                               evalGuard g2 vars1 arrs1
-and evalBool b vars arrs = match b with
+    | Assign (s, a) ->( (assignVar s (evalExpression a vars arrs) vars), arrs, (((s+":="+prettyprintExp a),(vars,arrs))::evaluationsteps) )
+    | AssignArr (s, i, a) ->  (vars, (assignArr s (evalExpression i vars arrs) (evalExpression a vars arrs) vars arrs),( (prettyprintExp(Arr(s,i))+":="+(prettyprintExp a),(vars,arrs)) ::evaluationsteps) )
+    | CommandList (c1, c2) -> let (vars1, arrs1,evaluationsteps1) = evaluateCommand c1 vars arrs evaluationsteps
+                              evaluateCommand c2 vars1 arrs1 evaluationsteps1
+    | Ifstate g -> evalIfGuard g vars arrs evaluationsteps
+    | Dostate g -> evalDoGuard g vars arrs evaluationsteps
+    | Skip -> (vars, arrs,("skip",(vars,arrs))::evaluationsteps)
+
+and evalIfGuard g vars arrs evaluationsteps =
+    match g with
+    | Bfunc (b, c) when (evalBool b vars arrs) -> evaluateCommand c vars arrs ((prettyprintBool(b),(vars,arrs))::evaluationsteps)
+    | Twoguard (g1, g2) -> let (vars1, arrs1,evaluationsteps1) = (evalIfGuard g1 vars arrs evaluationsteps)
+                           evalIfGuard g2 vars1 arrs1 evaluationsteps1
+    | _ -> (vars, arrs,evaluationsteps)    
+and evalDoGuard g vars arrs evaluationsteps =
+    match g with
+    | Bfunc (b, c) -> if (evalBool b vars arrs)
+                      then let (resultvar,resultarr,resultevalsteps) = evaluateCommand c vars arrs ((prettyprintBool(b),(vars,arrs))::evaluationsteps)
+                           evalDoGuard g resultvar resultarr (("skip",(resultvar, resultarr))::resultevalsteps)
+                      else let notbool =(prettyprintBool(Not(b)),(vars,arrs))
+                           (vars,arrs,  ( notbool::evaluationsteps) ) 
+    | Twoguard (g1, g2) -> let (vars1, arrs1,evaluationsteps1) = (evalDoGuard g1 vars arrs evaluationsteps)
+                           evalDoGuard g2 vars1 arrs1 evaluationsteps1
+    
+and evalBool b vars arrs  =
+    match b with
     | True -> true
     | False -> false
-    | And (b1, b2) when (evalBool b1 vars arrs) -> (evalBool b2 vars arrs)
-    | DAnd (b1, b2) -> (evalBool b1 vars arrs) && (evalBool b2 vars arrs)
-    | Or (b1, b2) when (evalBool b1 vars arrs) -> true
-    | DOr (b1, b2) -> (evalBool b1 vars arrs) || (evalBool b2 vars arrs)
+    | And (b1, b2) when (evalBool b1 vars arrs) -> (evalBool b2 vars arrs )
+    | DAnd (b1, b2) -> (evalBool b1 vars arrs) && (evalBool b2 vars arrs )
+    | Or (b1, b2) when (evalBool b1 vars arrs )= (true || false) -> (evalBool b1 vars arrs ) ||(evalBool b2 vars arrs )
+    | DOr (b1, b2) -> (evalBool b1 vars arrs ) || (evalBool b2 vars arrs )
+    | Not (b1) -> not (evalBool b1 vars arrs )
+    | Equal (aexpr1 , aexpr2) when  (evalExpression aexpr1 vars arrs) = (evalExpression aexpr2 vars arrs) -> true
+    | NotEqual (aexpr1, aexpr2) when ( not ((evalExpression aexpr1 vars arrs) = (evalExpression aexpr2 vars arrs))) -> true
+    | Geq (aexpr1 , aexpr2) when  (evalExpression aexpr1 vars arrs) >= (evalExpression aexpr2 vars arrs) -> true
+    | Gt (aexpr1 , aexpr2) when (evalExpression aexpr1 vars arrs) > (evalExpression aexpr2 vars arrs) -> true
+    | Lt (aexpr1 , aexpr2) when  (evalExpression aexpr1 vars arrs) < (evalExpression aexpr2 vars arrs) -> true
+    | Leq(aexpr1 , aexpr2) when  (evalExpression aexpr1 vars arrs) <= (evalExpression aexpr2 vars arrs) -> true
+    | ParB (b1) -> evalBool b1 vars arrs
+    | _ -> false
+
+let rec findInGraph label graph =
+    match graph with 
+    | [] -> "Evaluation not found in graph"
+    | (x',y',z')::xs when label = z' -> prettyprinterPretext x' y' z'
+    | _::xs -> findInGraph label xs
+
+let rec printEvaliationList (evalList:EvalList) resultProgramGraph=
+    match evalList with
+    | [] -> Console.WriteLine ""
+    | (x,(vars,arrs))::xs -> printEvaliationList xs resultProgramGraph
+                             Console.Write (findInGraph x resultProgramGraph)
+                             Console.Write "      "
+                             Console.Write vars
+                             Console.Write "      "
+                             Console.WriteLine arrs
+                             
+               
+
+let run =
+    Console.WriteLine("Enter initial variables: ")
+    let (initVar,initArr,initeval) = evaluateCommand (parse (Console.ReadLine())) [] [] []
+    Console.WriteLine((initVar,initArr))
+    Console.WriteLine ""
+    Console.WriteLine("Enter your favorite GCL expression: ")
+    let commands = parse (readAll (Console.ReadLine()) + "\n") // parse input
+    Console.WriteLine (string) // print AST
+    Console.WriteLine (prettyprintCommand commands) // print result parsed back
+    Console.WriteLine "" 
+    //print program graph
+    let result =pgc commands 1 1 [] 
     
+    let endpoint = max2(result)  //last node used
+    print (((0,1,"begin"  )::result)@ [(endpoint,endpoint+1,"-> end ];")] ) // generates beginning node and endnode
+    Console.WriteLine "" 
+    let  (vars, arrs,evaluationsteps:EvalList) = evaluateCommand commands initVar initArr []
+    printEvaliationList evaluationsteps result // print the steps taken to reach the final values
+    Console.WriteLine "" 
+    Console.Write "Final variable values: "
+    Console.WriteLine((vars,arrs))    // prints the final values 
 
-    | Not of (b)
-    | Equal of (aexpr * aexpr)
-    | NotEqual of (aexpr * aexpr)
-    | Geq of (aexpr * aexpr)
-    | Gt of (aexpr * aexpr)
-    | Lt of (aexpr * aexpr)
-    | Leq of (aexpr * aexpr)
-    | ParB of (b) 
-
-
-
-     
-
-//let run =
-    
-//    Console.WriteLine("Enter your favorite GCL expression: ")
-//    let string = parse (readAll (Console.ReadLine()) + "\n") // parse input
-//    Console.WriteLine (string) // print AST
-//    Console.WriteLine (prettyprintCommand string) // print result parsed back
-//    Console.WriteLine "" 
-//    // print program graph
-//    let result =pgPrinter string 1 1 [] 
-//    let endpoint = max(result)  //last node used
-//    print ((("q▷-> q1[label= begin ];",0  )::result)@ [("q" + (sprintf "%i" endpoint) + "-> q<[label= end ];",0  )] ) // generates beginning node and endnode
-   
-//run;;
-let initVals = evaluateCommand (parse (Console.ReadLine())) [] []
-Console.WriteLine(initVals)
-
-
-// Console.WriteLine ("q>"+ (string(endpoint)) + " -> q< [label= skip ];")
 
 
 
