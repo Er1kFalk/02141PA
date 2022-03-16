@@ -289,21 +289,23 @@ and evalBool b vars arrs  =
     | ParB (b1) -> evalBool b1 vars arrs
     | _ -> false
 
-let rec findInGraph label graph =
+let rec findInGraph label graph currentpos=
     match graph with 
-    | [] -> "Evaluation not found in graph"
-    | (x',y',z')::xs when label = z' -> prettyprinterPretext x' y' z'
-    | _::xs -> findInGraph label xs
+    | [] -> ("Didnt find  path in graph for the label"+ string(label)),currentpos
+    | (x',y',z')::xs when label = z' && currentpos=x' -> ((prettyprinterPretext x' y' z'),y')
+    | _::xs -> findInGraph label xs currentpos
 
-let rec printEvaliationList (evalList:EvalList) resultProgramGraph=
+let rec printEvaliationList (evalList:EvalList) resultProgramGraph currentpos=
     match evalList with
     | [] -> Console.WriteLine ""
-    | (x,(vars,arrs))::xs -> printEvaliationList xs resultProgramGraph
-                             Console.Write (findInGraph x resultProgramGraph)
+    | (x,(vars,arrs))::xs -> let (string1,nextpos) = findInGraph x resultProgramGraph currentpos
+                            
+                             Console.Write (string1)
                              Console.Write "      "
                              Console.Write vars
                              Console.Write "      "
                              Console.WriteLine arrs
+                             printEvaliationList xs resultProgramGraph nextpos
                              
                
 
@@ -324,7 +326,7 @@ let run =
     print (((0,1,"begin"  )::result)@ [(endpoint,endpoint+1,"-> end ];")] ) // generates beginning node and endnode
     Console.WriteLine "" 
     let  (vars, arrs,evaluationsteps:EvalList) = evaluateCommand commands initVar initArr []
-    printEvaliationList evaluationsteps result // print the steps taken to reach the final values
+    printEvaliationList (List.rev evaluationsteps) result 1 // print the steps taken to reach the final values
     Console.WriteLine "" 
     Console.Write "Final variable values: "
     Console.WriteLine((vars,arrs))    // prints the final values 
