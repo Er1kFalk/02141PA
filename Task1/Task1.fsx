@@ -271,7 +271,8 @@ let rec evaluateCommand c vars arrs (evaluationsteps:EvalList) stepcount maxcoun
 
             | Skip -> (vars, arrs,("skip",(vars,arrs))::evaluationsteps)
     else
-        failwith "error. To many evaluations"
+        Console.WriteLine (string(stepcount))
+        (vars,arrs,evaluationsteps)
 
 
 
@@ -282,15 +283,20 @@ and evalIfGuard g vars arrs evaluationsteps stepcount maxcount =
                            evalIfGuard g2 vars1 arrs1 evaluationsteps1  (stepcount+1) maxcount
     | _ -> (vars, arrs,evaluationsteps)    
 and evalDoGuard g vars arrs evaluationsteps stepcount maxcount boollist=
-    match g with
-    | Bfunc (b, c) -> if (evalBool b vars arrs)
-                      then let (resultvar,resultarr,resultevalsteps) = evaluateCommand c vars arrs ((prettyprintBool(b),(vars,arrs))::evaluationsteps)  (stepcount+1) maxcount
-                           evalDoGuard g resultvar resultarr (("skip",(resultvar, resultarr))::resultevalsteps)  (stepcount+1) maxcount boollist
-                      else (prettyprintBool(Not(b))::boollist,(vars,arrs,evaluationsteps) ) 
-    | Twoguard (g1, g2) -> let (boollist1,(vars1, arrs1,evaluationsteps1)) = (evalDoGuard g1 vars arrs evaluationsteps)  (stepcount+1) maxcount boollist
-                           evalDoGuard g2 vars1 arrs1 (evaluationsteps1)  (stepcount+1) maxcount boollist1
+    
+        match g with
+        | Bfunc (b, c) -> if (evalBool b vars arrs)
+                          then let (resultvar,resultarr,resultevalsteps) = evaluateCommand c vars arrs ((prettyprintBool(b),(vars,arrs))::evaluationsteps)  (stepcount+1) maxcount
+                               if stepcount<maxcount then
+                                    evalDoGuard g resultvar resultarr (("skip",(resultvar, resultarr))::resultevalsteps)  (stepcount+1) maxcount boollist
+                               else 
+                                     (["true"],(vars,arrs,evaluationsteps))    
+                          else (prettyprintBool(Not(b))::boollist,(vars,arrs,evaluationsteps) ) 
+        | Twoguard (g1, g2) -> let (boollist1,(vars1, arrs1,evaluationsteps1)) = (evalDoGuard g1 vars arrs evaluationsteps)  (stepcount+1) maxcount boollist
+                               evalDoGuard g2 vars1 arrs1 (evaluationsteps1)  (stepcount+1) maxcount boollist1
                            
     
+
 and evalBool b vars arrs  =
     match b with
     | True -> true
@@ -313,7 +319,7 @@ and evalBool b vars arrs  =
 
 let rec findInGraph label graph currentpos=
     match graph with 
-    | [] -> let string =  "Didnt find  path in graph for the label: \""+ string(label) + "\", at pos: " + string(currentpos)
+    | [] -> let string = failwith ("Stuck at node:" + string(currentpos))
             (string,currentpos)
     | (x',y',z')::xs when (String.Equals (label, z') && currentpos=x') -> ((prettyprinterPretext x' y' (-1) z'),y')
     | _::xs -> findInGraph label xs currentpos
