@@ -39,7 +39,7 @@ let rec max l =
 let rec max2 l =
    match l with
    | [] -> 0
-   | (_, y',_)::xs -> if y' > (max2 xs) then y' else max2 xs
+   | (_, y',_, _)::xs -> if y' > (max2 xs) then y' else max2 xs
 
 
 // We
@@ -57,6 +57,7 @@ let rec prettyprintExp x  =
     match x with
     | Num(n) -> string n
     | X(s) -> s+""
+    | X'(s) -> s+""
     | Arr (s, exp) -> s + "[" + (prettyprintExp exp) + "]"
     | TimesExpr (a, b) -> (prettyprintExp a) + "*" + (prettyprintExp b)
     | DivExpr (a, b) ->  (prettyprintExp a) + "/" + (prettyprintExp b)
@@ -85,6 +86,10 @@ let rec prettyprintBool x =
     | Leq (a, b) -> (prettyprintExp a) + "<=" + (prettyprintExp b)
     | ParB b -> "(" + (prettyprintBool b) + ")"
 
+let prettyPrintPredicate input = 
+    match input with
+    | PBool b -> "{ " + prettyprintBool b + " }"
+
 let rec prettyprintGuard g = 
     match g with
     | Bfunc (b, c) -> (prettyprintBool b) + " -> " + (prettyprintCommand c)
@@ -97,7 +102,8 @@ and prettyprintCommand c =
     | CommandList (c1, c2) -> (prettyprintCommand c1) + ";\n" + (prettyprintCommand c2)
     | Ifstate g -> "if " + prettyprintGuard g + " fi"
     | Dostate g -> "do " + prettyprintGuard g + " od"
-
+    | PredCommand (p1, c, p2) ->
+        prettyPrintPredicate p1 + "\n" + prettyprintCommand c + "\n" + prettyPrintPredicate p2
 let prettyprinterPretext (num:int) (num2:int) max (label:string) =
     if (num=0)  then "q▷-> q" + string(num2) + "[label= \"" + label + "\"];"
                 else if num2=max then
@@ -138,36 +144,38 @@ and pgPrinter x (beginnode:int) (nextnode:int) list=
                      let skip = (prettyprinterPretext (max list) (beginnode) "skip",(max(list)+1))
                      boollist@[skip]   
     | Skip -> ((prettyprinterPretext nextnode (nextnode+1)) ("skip"),nextnode+1)::list *)
-and pgc x (beginnode:int) (nextnode:int) list stepcount maxcount=
+and pgc x (beginnode:int) (nextnode:int) list stepcount maxcount covered =
     if stepcount<maxcount then
         match x with
-        | Assign(x',y') -> (nextnode, (nextnode+1), (x'+":="+ prettyprintExp y'))::list
-        | AssignArr(x',y,z')-> (nextnode, (nextnode+1), (x' + prettyprintExp y + ":=" + prettyprintExp z'))::list
-        | CommandList(x',y')   -> let lx = pgc x' beginnode nextnode list (stepcount+1) maxcount
-                                  let ly = (pgc y' (max2 lx) (max2 lx) [] (stepcount+1) maxcount)
+        | Assign(x',y') -> (nextnode, (nextnode+1), (x'+":="+ prettyprintExp y'), true)::list
+        | AssignArr(x',y,z')-> (nextnode, (nextnode+1), (x' + prettyprintExp y + ":=" + prettyprintExp z'), true)::list
+        | CommandList(x',y')   -> let lx = pgc x' beginnode nextnode list (stepcount+1) maxcount false
+                                  let ly = (pgc y' (max2 lx) (max2 lx) [] (stepcount+1) maxcount false)
                                   lx @ ly
         | Ifstate(x') -> let (bool,list) = pgg x' nextnode (nextnode) list [] (stepcount+1) maxcount
-                         let boollist= ( (beginnode, ((max2 list)+1), (combinedguard(bool)))::list )
+                         let boollist= ( (beginnode, ((max2 list)+1), (combinedguard(bool)),true)::list )
                          boollist               
         | Dostate(x') -> let (bool,list) = pgg x' nextnode (nextnode) list [] (stepcount+1) maxcount
-                         let skip = list @ [((max2 list), (beginnode), "skip")]
-                         let boollist= (skip @ [(beginnode, (max2 list+1), (combinedguard(bool)) )] )
+                         let skip = list @ [((max2 list), (beginnode), "skip", covered)]
+                         let boollist= (skip @ [(beginnode, (max2 list+1), (combinedguard(bool)), covered )] )
                          boollist  
-        | Skip -> (nextnode, (nextnode+1), ("skip"))::list
+        | Skip -> (nextnode, (nextnode+1), ("skip"), true)::list
+        | Skip -> (nextnode, (nextnode+1), ("skip"), true)::list
+        | PredCommand (_, c, _) -> pgc c beginnode nextnode list stepcount maxcount true
     else 
         failwith "to many steps taken"
 and pgg gc beginnode nextnode l boollist stepcount maxcount=
     if stepcount<maxcount then 
         match gc with
             | Bfunc (b, c) -> 
-                let newlist = (pgc c beginnode (nextnode+1) (l) (stepcount+1) maxcount)
-                let newlist2 = (beginnode, (nextnode+1), (prettyprintBool b))::newlist
+                let newlist = (pgc c beginnode (nextnode+1) (l) (stepcount+1) maxcount false)
+                let newlist2 = (beginnode, (nextnode+1), (prettyprintBool b), true)::newlist
                 let not = prettyprintBool (Not b)
                 (not::boollist,newlist2)
             | Twoguard (g1, g2) -> 
                 let (bool,firstguard) =(pgg g1 beginnode nextnode l boollist (stepcount+1) maxcount) 
                 let (bool2,secondguard)=pgg g2 (beginnode) (max2 firstguard) [] bool (stepcount+1) maxcount
-                let returnback1 = ((max2(firstguard)), (beginnode), "skip")
+                let returnback1 = ((max2(firstguard)), (beginnode), "skip", true)
                 (bool2, firstguard@(returnback1::secondguard))
     else 
         failwith "to many steps taken"                           
@@ -196,13 +204,13 @@ let rec readAll s =
         
 let print  x =
     Console.WriteLine "digraph program_graph {rankdir=LR; \nnode [shape = circle]; q▷; \nnode [shape = doublecircle]; q◀; \nnode [shape = circle]     "       
-    let rec print' list endpoint =
+    let rec print' list endpoint covered =
         match list with
-        | [] -> Console.Write("")
-        | (x',y',(z':string))::xs -> Console.WriteLine (prettyprinterPretext x' y' endpoint z')
-                                     print' xs endpoint
+        | [] -> Console.Write("// " + string (covered))
+        | (x',y',(z':string),covered')::xs -> Console.WriteLine (prettyprinterPretext x' y' endpoint z')
+                                              print' xs endpoint (covered' && covered)
     let endpoint= max2 x
-    print' x endpoint
+    print' x endpoint true
     Console.WriteLine "}"
 
 (* let parseAll =
@@ -270,6 +278,7 @@ let rec evaluateCommand c vars arrs (evaluationsteps:EvalList) stepcount maxcoun
                            (vars1,arrs1,(boolskip::list1))
 
             | Skip -> (vars, arrs,("skip",(vars,arrs))::evaluationsteps)
+            | PredCommand (p1, c, p2) -> evaluateCommand c vars arrs evaluationsteps stepcount maxcount
     else
         Console.WriteLine (string(stepcount))
         (vars,arrs,evaluationsteps)
@@ -314,7 +323,10 @@ and evalBool b vars arrs  =
     | Leq(aexpr1 , aexpr2) when  (evalExpression aexpr1 vars arrs) <= (evalExpression aexpr2 vars arrs) -> true
     | ParB (b1) -> evalBool b1 vars arrs
     | _ -> false
-
+and evaluatePred p vars arrs = 
+    match p with
+    | PBool b -> evalBool b vars arrs
+   // | Pexpr a -> evalExpression a vars arrs
 
 
 let rec findInGraph label graph currentpos=
@@ -338,19 +350,19 @@ let rec printEvaliationList (evalList:EvalList) resultProgramGraph currentpos=
 
 
 let run =
-    //Console.WriteLine("Enter initial variables: ")
-    //let (initVar,initArr,initeval) = evaluateCommand (parse (Console.ReadLine())) [] [] [] 0 50
-    //Console.WriteLine((initVar,initArr))
-    //Console.WriteLine ""
+    Console.WriteLine("Enter initial variables: ")
+    let (initVar,initArr,initeval) = evaluateCommand (parse (Console.ReadLine())) [] [] [] 0 50
+    Console.WriteLine((initVar,initArr))
+    Console.WriteLine ""
     Console.WriteLine("Enter your favorite GCL expression: ")
     let commands = parse (readAll (Console.ReadLine()) + "\n") // parse input
-    Console.WriteLine (string) // print AST
+    Console.WriteLine (commands) // print AST
     Console.WriteLine (prettyprintCommand commands) // print result parsed back
     Console.WriteLine "" 
     //print program graph
-    let result =pgc commands 1 1 [] 0 50
+    let result =pgc commands 1 1 [] 0 50 false
     let endpoint = max2(result)  //last node used  
-    print (((0,1,"begin"  )::result)@ [(endpoint,endpoint+1,"end")] ) // generates beginning node and endnode
+    print (((0,1,"begin",true  )::result)@ [(endpoint,endpoint+1,"end", true)] ) // generates beginning node and endnode
     Console.WriteLine "" 
     //let  (vars, arrs,evaluationsteps:EvalList) = evaluateCommand commands initVar initArr [] 0 50
     //printEvaliationList (List.rev evaluationsteps) result 1 // print the steps taken to reach the final values
@@ -381,7 +393,7 @@ let run2 initialValues gCL stepcount =
     //Console.WriteLine((vars,arrs))    // prints the final values 
     
     
-let test = run2 "n:=3;A[0]:=100;A[1]:=3;A[2]:=40" " i:=0; x:=0; y:=0; do (n>i)&&(A[i]>=0) -> x:=x+A[i]; y:=y+1; i:=i+1 [] (n>i)&&(0>A[i]) -> i:=i+1 od; x:=x/y " 50
+//let test = run2 "n:=3;A[0]:=100;A[1]:=3;A[2]:=40" " i:=0; x:=0; y:=0; do (n>i)&&(A[i]>=0) -> x:=x+A[i]; y:=y+1; i:=i+1 [] (n>i)&&(0>A[i]) -> i:=i+1 od; x:=x/y " 50
 
 
 (*

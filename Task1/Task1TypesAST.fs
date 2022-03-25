@@ -23,6 +23,7 @@ type command =
     | CommandList of (command * command)
     | Ifstate of (guard)
     | Dostate of (guard)
+    | PredCommand of (p * command * p)
 and b =
     | True
     | False
@@ -41,10 +42,9 @@ and b =
 and guard = 
     | Bfunc of (b * command)
     | Twoguard of (guard * guard)
-
-type p = 
+and p = 
     | PBool of (b)
-    | Pexpr of (aexpr)
+   // | Pexpr of (aexpr)
 
 //type p = 
 //    | True
