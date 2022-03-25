@@ -160,8 +160,8 @@ and pgc x (beginnode:int) (nextnode:int) list stepcount maxcount covered =
                          let boollist= (skip @ [(beginnode, (max2 list+1), (combinedguard(bool)), covered )] )
                          boollist  
         | Skip -> (nextnode, (nextnode+1), ("skip"), true)::list
-        | Skip -> (nextnode, (nextnode+1), ("skip"), true)::list
-        | PredCommand (_, c, _) -> pgc c beginnode nextnode list stepcount maxcount true
+        | PredCommand (_, c, _) ->
+            pgc c beginnode nextnode list stepcount maxcount true
     else 
         failwith "to many steps taken"
 and pgg gc beginnode nextnode l boollist stepcount maxcount=
@@ -206,7 +206,7 @@ let print  x =
     Console.WriteLine "digraph program_graph {rankdir=LR; \nnode [shape = circle]; q▷; \nnode [shape = doublecircle]; q◀; \nnode [shape = circle]     "       
     let rec print' list endpoint covered =
         match list with
-        | [] -> Console.Write("// " + string (covered))
+        | [] -> Console.WriteLine("// " + "The statement \"the graph is covered\" is: " + string (covered))
         | (x',y',(z':string),covered')::xs -> Console.WriteLine (prettyprinterPretext x' y' endpoint z')
                                               print' xs endpoint (covered' && covered)
     let endpoint= max2 x
@@ -278,7 +278,8 @@ let rec evaluateCommand c vars arrs (evaluationsteps:EvalList) stepcount maxcoun
                            (vars1,arrs1,(boolskip::list1))
 
             | Skip -> (vars, arrs,("skip",(vars,arrs))::evaluationsteps)
-            | PredCommand (p1, c, p2) -> evaluateCommand c vars arrs evaluationsteps stepcount maxcount
+            | PredCommand (p1, c, p2) -> 
+                evaluateCommand c vars arrs evaluationsteps stepcount maxcount
     else
         Console.WriteLine (string(stepcount))
         (vars,arrs,evaluationsteps)
@@ -348,6 +349,10 @@ let rec printEvaliationList (evalList:EvalList) resultProgramGraph currentpos=
                              Console.WriteLine arrs
                              printEvaliationList xs resultProgramGraph nextpos
 
+let checkCommandType c =
+    match c with
+    | PredCommand (_, _, _) -> true
+    | _ -> false
 
 let run =
     Console.WriteLine("Enter initial variables: ")
@@ -362,7 +367,7 @@ let run =
     //print program graph
     let result =pgc commands 1 1 [] 0 50 false
     let endpoint = max2(result)  //last node used  
-    print (((0,1,"begin",true  )::result)@ [(endpoint,endpoint+1,"end", true)] ) // generates beginning node and endnode
+    print (((0,1,"begin", checkCommandType commands)::result)@ [(endpoint,endpoint+1,"end", true)] ) // generates beginning node and endnode
     Console.WriteLine "" 
     //let  (vars, arrs,evaluationsteps:EvalList) = evaluateCommand commands initVar initArr [] 0 50
     //printEvaliationList (List.rev evaluationsteps) result 1 // print the steps taken to reach the final values

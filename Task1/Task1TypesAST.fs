@@ -25,7 +25,7 @@ type command =
     | Dostate of (guard)
     | PredCommand of (p * command * p)
 and b =
-    | True
+    | True 
     | False
     | And of (b * b)
     | DAnd of (b * b)
@@ -45,7 +45,7 @@ and guard =
 and p = 
     | PBool of (b)
    // | Pexpr of (aexpr)
-
+   
 //type p = 
 //    | True
 //    | False

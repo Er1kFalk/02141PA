@@ -336,10 +336,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 49 "Task1Parser.fsp"
+# 52 "Task1Parser.fsp"
                                                       _1 
                    )
-# 49 "Task1Parser.fsp"
+# 52 "Task1Parser.fsp"
                  : command));
 # 344 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -348,10 +348,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 59 "Task1Parser.fsp"
+# 62 "Task1Parser.fsp"
                                                          TimesExpr(_1,_3) 
                    )
-# 59 "Task1Parser.fsp"
+# 62 "Task1Parser.fsp"
                  : aexpr));
 # 356 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -360,10 +360,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 60 "Task1Parser.fsp"
+# 63 "Task1Parser.fsp"
                                                          DivExpr(_1,_3) 
                    )
-# 60 "Task1Parser.fsp"
+# 63 "Task1Parser.fsp"
                  : aexpr));
 # 368 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -372,10 +372,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 61 "Task1Parser.fsp"
+# 64 "Task1Parser.fsp"
                                                          PlusExpr(_1,_3) 
                    )
-# 61 "Task1Parser.fsp"
+# 64 "Task1Parser.fsp"
                  : aexpr));
 # 380 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -383,10 +383,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 62 "Task1Parser.fsp"
+# 65 "Task1Parser.fsp"
                                                 UMinusExpr(_2)
                    )
-# 62 "Task1Parser.fsp"
+# 65 "Task1Parser.fsp"
                  : aexpr));
 # 391 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -395,10 +395,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 63 "Task1Parser.fsp"
+# 66 "Task1Parser.fsp"
                                                          MinusExpr(_1,_3) 
                    )
-# 63 "Task1Parser.fsp"
+# 66 "Task1Parser.fsp"
                  : aexpr));
 # 403 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -407,10 +407,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 64 "Task1Parser.fsp"
+# 67 "Task1Parser.fsp"
                                                          PowExpr(_1,_3) 
                    )
-# 64 "Task1Parser.fsp"
+# 67 "Task1Parser.fsp"
                  : aexpr));
 # 415 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -418,10 +418,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 65 "Task1Parser.fsp"
+# 68 "Task1Parser.fsp"
                                                          UPlusExpr(_2) 
                    )
-# 65 "Task1Parser.fsp"
+# 68 "Task1Parser.fsp"
                  : aexpr));
 # 426 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -429,10 +429,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 66 "Task1Parser.fsp"
+# 69 "Task1Parser.fsp"
                                                          Num(_1) 
                    )
-# 66 "Task1Parser.fsp"
+# 69 "Task1Parser.fsp"
                  : aexpr));
 # 437 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -441,10 +441,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 67 "Task1Parser.fsp"
+# 70 "Task1Parser.fsp"
                                                          Arr(_1, _3) 
                    )
-# 67 "Task1Parser.fsp"
+# 70 "Task1Parser.fsp"
                  : aexpr));
 # 449 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -452,10 +452,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 68 "Task1Parser.fsp"
+# 71 "Task1Parser.fsp"
                                        X(_1)
                    )
-# 68 "Task1Parser.fsp"
+# 71 "Task1Parser.fsp"
                  : aexpr));
 # 460 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -463,10 +463,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 69 "Task1Parser.fsp"
+# 72 "Task1Parser.fsp"
                                               X'(_2)
                    )
-# 69 "Task1Parser.fsp"
+# 72 "Task1Parser.fsp"
                  : aexpr));
 # 471 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -474,10 +474,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 70 "Task1Parser.fsp"
+# 73 "Task1Parser.fsp"
                                                    APar(_2)
                    )
-# 70 "Task1Parser.fsp"
+# 73 "Task1Parser.fsp"
                  : aexpr));
 # 482 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -486,10 +486,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 74 "Task1Parser.fsp"
+# 77 "Task1Parser.fsp"
                                                        Bfunc(_1, _3)
                    )
-# 74 "Task1Parser.fsp"
+# 77 "Task1Parser.fsp"
                  : guard));
 # 494 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -498,10 +498,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 75 "Task1Parser.fsp"
+# 78 "Task1Parser.fsp"
                                                                   Twoguard(_1, _3)
                    )
-# 75 "Task1Parser.fsp"
+# 78 "Task1Parser.fsp"
                  : guard));
 # 506 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -510,10 +510,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 79 "Task1Parser.fsp"
+# 82 "Task1Parser.fsp"
                                                       Assign(_1,_3)
                    )
-# 79 "Task1Parser.fsp"
+# 82 "Task1Parser.fsp"
                  : command));
 # 518 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -523,20 +523,20 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 80 "Task1Parser.fsp"
+# 83 "Task1Parser.fsp"
                                                                           AssignArr(_1, _3, _6)
                    )
-# 80 "Task1Parser.fsp"
+# 83 "Task1Parser.fsp"
                  : command));
 # 531 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 81 "Task1Parser.fsp"
+# 84 "Task1Parser.fsp"
                                          Skip
                    )
-# 81 "Task1Parser.fsp"
+# 84 "Task1Parser.fsp"
                  : command));
 # 541 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -545,10 +545,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 82 "Task1Parser.fsp"
+# 85 "Task1Parser.fsp"
                                                            CommandList(_1,_3)
                    )
-# 82 "Task1Parser.fsp"
+# 85 "Task1Parser.fsp"
                  : command));
 # 553 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -556,10 +556,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 83 "Task1Parser.fsp"
+# 86 "Task1Parser.fsp"
                                                      Ifstate(_2)
                    )
-# 83 "Task1Parser.fsp"
+# 86 "Task1Parser.fsp"
                  : command));
 # 564 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -567,10 +567,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 84 "Task1Parser.fsp"
+# 87 "Task1Parser.fsp"
                                                      Dostate(_2)
                    )
-# 84 "Task1Parser.fsp"
+# 87 "Task1Parser.fsp"
                  : command));
 # 575 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -580,30 +580,30 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 85 "Task1Parser.fsp"
+# 88 "Task1Parser.fsp"
                                                                           PredCommand(_1, _2, _3)
                    )
-# 85 "Task1Parser.fsp"
+# 88 "Task1Parser.fsp"
                  : command));
 # 588 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 89 "Task1Parser.fsp"
+# 92 "Task1Parser.fsp"
                                      True
                    )
-# 89 "Task1Parser.fsp"
+# 92 "Task1Parser.fsp"
                  : b));
 # 598 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 90 "Task1Parser.fsp"
+# 93 "Task1Parser.fsp"
                                       False
                    )
-# 90 "Task1Parser.fsp"
+# 93 "Task1Parser.fsp"
                  : b));
 # 608 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -612,10 +612,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 91 "Task1Parser.fsp"
+# 94 "Task1Parser.fsp"
                                                  And(_1, _3)
                    )
-# 91 "Task1Parser.fsp"
+# 94 "Task1Parser.fsp"
                  : b));
 # 620 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -624,10 +624,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 92 "Task1Parser.fsp"
+# 95 "Task1Parser.fsp"
                                                  DAnd(_1, _3)
                    )
-# 92 "Task1Parser.fsp"
+# 95 "Task1Parser.fsp"
                  : b));
 # 632 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -636,10 +636,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 93 "Task1Parser.fsp"
+# 96 "Task1Parser.fsp"
                                                 Or(_1, _3)
                    )
-# 93 "Task1Parser.fsp"
+# 96 "Task1Parser.fsp"
                  : b));
 # 644 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -648,10 +648,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 94 "Task1Parser.fsp"
+# 97 "Task1Parser.fsp"
                                                  DOr(_1, _3)
                    )
-# 94 "Task1Parser.fsp"
+# 97 "Task1Parser.fsp"
                  : b));
 # 656 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -659,10 +659,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 95 "Task1Parser.fsp"
+# 98 "Task1Parser.fsp"
                                            Not(_2)
                    )
-# 95 "Task1Parser.fsp"
+# 98 "Task1Parser.fsp"
                  : b));
 # 667 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -671,10 +671,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 96 "Task1Parser.fsp"
+# 99 "Task1Parser.fsp"
                                                        Equal(_1, _3)
                    )
-# 96 "Task1Parser.fsp"
+# 99 "Task1Parser.fsp"
                  : b));
 # 679 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -683,10 +683,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 97 "Task1Parser.fsp"
+# 100 "Task1Parser.fsp"
                                                           NotEqual(_1, _3)
                    )
-# 97 "Task1Parser.fsp"
+# 100 "Task1Parser.fsp"
                  : b));
 # 691 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -695,10 +695,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 98 "Task1Parser.fsp"
+# 101 "Task1Parser.fsp"
                                                      Geq(_1, _3)
                    )
-# 98 "Task1Parser.fsp"
+# 101 "Task1Parser.fsp"
                  : b));
 # 703 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -707,10 +707,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 99 "Task1Parser.fsp"
+# 102 "Task1Parser.fsp"
                                                     Gt(_1, _3)
                    )
-# 99 "Task1Parser.fsp"
+# 102 "Task1Parser.fsp"
                  : b));
 # 715 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -719,10 +719,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 100 "Task1Parser.fsp"
+# 103 "Task1Parser.fsp"
                                                      Leq(_1,_3)
                    )
-# 100 "Task1Parser.fsp"
+# 103 "Task1Parser.fsp"
                  : b));
 # 727 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -731,10 +731,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 101 "Task1Parser.fsp"
+# 104 "Task1Parser.fsp"
                                                     Lt(_1,_3)
                    )
-# 101 "Task1Parser.fsp"
+# 104 "Task1Parser.fsp"
                  : b));
 # 739 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -742,10 +742,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 102 "Task1Parser.fsp"
+# 105 "Task1Parser.fsp"
                                                ParB(_2)
                    )
-# 102 "Task1Parser.fsp"
+# 105 "Task1Parser.fsp"
                  : b));
 # 750 "Task1Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -753,10 +753,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 106 "Task1Parser.fsp"
+# 109 "Task1Parser.fsp"
                                           PBool(_2)
                    )
-# 106 "Task1Parser.fsp"
+# 109 "Task1Parser.fsp"
                  : 'predicate));
 |]
 # 762 "Task1Parser.fs"

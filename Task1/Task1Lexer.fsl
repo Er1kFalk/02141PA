@@ -37,7 +37,7 @@ rule tokenize = parse
 | ')'           { RPAR }
 | ":="			{ ASSIGN }
 | "skip"		{ SKIP }
-| ';' | ";\n"   { COMMANDLIST}
+| ';'           { COMMANDLIST}
 | "[]"			{TWOGUARD}
 | '['			{LSQPAR}
 | ']'			{RSQPAR}
@@ -52,7 +52,7 @@ rule tokenize = parse
 | '>'           {GT}
 | "<="          {LEQ}
 | '<'           {LT}
-| "true"		{TRUE}
+| "true"        {TRUE}
 | "false"		{FALSE}
 | "immutable"   { IMMUTABLE }
 | "predicate"   { PRED }
