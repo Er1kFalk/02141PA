@@ -1,7 +1,7 @@
 // This script implements our interactive calculator
 
 // We need to import a couple of modules, including the generated lexer and parser
-#r "C:/Users/Erik/.nuget/packages/fslexyacc/10.0.0/build/fsyacc/net46/FsLexYacc.Runtime.dll"
+#r "C:/Users/Harald/.nuget/packages/fslexyacc/10.0.0/build/fsyacc/net46/FsLexYacc.Runtime.dll"
 open FSharp.Text.Lexing
 open System
 #load "Task1TypesAST.fs"
@@ -362,6 +362,7 @@ let run =
     Console.WriteLine("Enter your favorite GCL expression: ")
     let commands = parse (readAll (Console.ReadLine()) + "\n") // parse input
     Console.WriteLine (commands) // print AST
+    Console.WriteLine ""
     Console.WriteLine (prettyprintCommand commands) // print result parsed back
     Console.WriteLine "" 
     //print program graph
@@ -374,36 +375,14 @@ let run =
     //Console.WriteLine "" 
     //Console.Write "Final variable values: "
     //Console.WriteLine((vars,arrs))    // prints the final values 
+let rec domP q p =  
+    match p with
+    | [] -> false
+    | x::xs when x=q -> true
+    | x::xs -> domP q xs
 
-
-let run2 initialValues gCL stepcount =
-    //Console.WriteLine("Enter initial variables: ")
-    let (initVar,initArr,initeval) = evaluateCommand (parse (initialValues)) [] [] [] 0 stepcount
-    Console.WriteLine((initVar,initArr))
-    Console.WriteLine ""
-    //Console.WriteLine("Enter your favorite GCL expression: ")
-    let commands = parse (gCL) // parse input
-    Console.WriteLine "" 
-    Console.WriteLine (string) // print AST
-    Console.WriteLine (prettyprintCommand commands) // print result parsed back
-    Console.WriteLine "" 
-    //let result =pgc commands 1 1 [] 0 50 //print program graph
-    //let endpoint = max2(result)  //last node used
-    //print (((0,1,"begin"  )::result)@ [(endpoint,endpoint+1,"end")] ) // generates beginning node and endnode
-    //Console.WriteLine "" 
-    //let  (vars, arrs,evaluationsteps:EvalList) = evaluateCommand commands initVar initArr [] 0 stepcount
-    //printEvaliationList (List.rev evaluationsteps) result 1 // print the steps taken to reach the final values
-    //Console.WriteLine "" 
-    //Console.Write "Final variable values: "
-    //Console.WriteLine((vars,arrs))    // prints the final values 
-    
-    
-//let test = run2 "n:=3;A[0]:=100;A[1]:=3;A[2]:=40" " i:=0; x:=0; y:=0; do (n>i)&&(A[i]>=0) -> x:=x+A[i]; y:=y+1; i:=i+1 [] (n>i)&&(0>A[i]) -> i:=i+1 od; x:=x/y " 50
-
-
-(*
-        n:=3;A[0]:=100;A[1]:=3;A[2]:=40
-
-        i:=0; x:=0; y:=0; do (n>i)&&(A[i]>=0) -> x:=x+A[i]; y:=y+1; i:=i+1 [] (n>i)&&(0>A[i]) -> i:=i+1 od; x:=x/y
-
-*)
+let rec build pg p spf=
+    match pg with 
+    | [] -> spf
+    | q::qs when (domP q p)  -> build qs p (q::spf)
+    | q::qs -> build qs p spf   
