@@ -1,7 +1,7 @@
 // This script implements our interactive calculator
 
 // We need to import a couple of modules, including the generated lexer and parser
-#r "C:/Users/Harald/.nuget/packages/fslexyacc/10.0.0/build/fsyacc/net46/FsLexYacc.Runtime.dll"
+#r "C:/Users/Erik/.nuget/packages/fslexyacc/10.0.0/build/fsyacc/net46/FsLexYacc.Runtime.dll"
 open FSharp.Text.Lexing
 open System
 #load "Task1TypesAST.fs"
@@ -386,3 +386,15 @@ let rec build pg p spf=
     | [] -> spf
     | q::qs when (domP q p)  -> build qs p (q::spf)
     | q::qs -> build qs p spf   
+
+let signEvalPlus n1 n2 = match (set [n1; n2]) with
+                     | s when s.Equals (set ['-'; '-']) -> set ['-']
+                     | s when s.Equals (set ['-'; '0']) -> set ['0']
+                     | s when s.Equals (set ['-'; '+']) -> set ['-'; '0'; '+']
+                     | _ -> failwith "signs not valid"
+
+let signEvalTimes n1 n2 = match (set [n1; n2]) with
+                     | s when s.Equals (set ['-'; '-']) -> set ['+']
+                     | s when s.Equals (set ['-'; '0']) -> set ['0']
+                     | s when s.Equals (set ['-'; '+']) -> set ['-']
+                     | _ -> failwith "signs not valid"
