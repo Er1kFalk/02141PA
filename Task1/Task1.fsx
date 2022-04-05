@@ -42,6 +42,7 @@ let rec max2 l =
    | (_, y',_, _)::xs -> if y' > (max2 xs) then y' else max2 xs
 
 
+
 // We
 
 let parse input =
@@ -398,3 +399,46 @@ let signEvalTimes n1 n2 = match (set [n1; n2]) with
                      | s when s.Equals (set ['-'; '0']) -> set ['0']
                      | s when s.Equals (set ['-'; '+']) -> set ['-']
                      | _ -> failwith "signs not valid"
+
+// For assignment 5
+let sign a = if a > 0 then '+' else
+                                 if a=0 then '0' else '-'
+let signx x  vars = let result = (getValueVars x vars)   
+                    match result with
+                    | Some x -> sign x
+                    | None -> failwith "unknown variable"      
+
+let signevalminus x y = 
+    match x, y with 
+    | x,y when (x='-' && y='-') -> set ['-';'0';'+']  
+    | x,y when (x='-' && y='0') -> set ['-']
+    | x,y when (x='-' && y='+') -> set ['-'] 
+    | x,y when (x='0' && y='-') -> set ['+']  
+    | x,y when (x='0' && y='0') -> set ['0']
+    | x,y when (x='0' && y='+') -> set ['-'] 
+    | x,y when (x='+' && y='-') -> set ['+']  
+    | x,y when (x='+' && y='0') -> set ['+']
+    | x,y when (x='+' && y='+') -> set ['-';'0';'+']
+
+let singevalDiv x y =
+    match x,y with 
+    | x,y when (x='-' && y='-') -> set ['+']  
+    | x,y when (x='-' && y='0') -> set []
+    | x,y when (x='-' && y='+') -> set ['-'] 
+    | x,y when (x='0' && y='-') -> set ['0']  
+    | x,y when (x='0' && y='0') -> set []
+    | x,y when (x='0' && y='+') -> set ['0'] 
+    | x,y when (x='+' && y='-') -> set ['-']  
+    | x,y when (x='+' && y='0') -> set []
+    | x,y when (x='+' && y='+') -> set ['+']
+let rec helper x sety signfunction= 
+        match sety with 
+        | sety' when Set.isEmpty sety' -> set []
+        | sety' ->  let element = sety'.MinimumElement
+                    Set.union (helper x (sety'.Remove element) signfunction) (signfunction x element)
+
+let rec signevalSets setx sety signfunction =
+   match setx with 
+   | setx' when Set.isEmpty setx' -> set []
+   | setx' ->  let element = setx'.MinimumElement
+               Set.union  (signevalSets (setx'.Remove element) sety signfunction)  (helper element sety signfunction)
