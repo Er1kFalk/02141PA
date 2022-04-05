@@ -389,24 +389,35 @@ let rec build pg p spf=
     | q::qs -> build qs p spf   
 
 let signEvalPlus n1 n2 = match (set [n1; n2]) with
-                     | s when s.Equals (set ['-'; '-']) -> set ['-']
-                     | s when s.Equals (set ['-'; '0']) -> set ['0']
+                     | s when s.Equals (set ['-']) -> set ['-'] 
+                     | s when s.Equals (set ['-'; '0']) -> set ['-']
+                     | s when s.Equals (set ['+'; '0']) -> set ['+']
                      | s when s.Equals (set ['-'; '+']) -> set ['-'; '0'; '+']
+                     | s when s.Equals (set ['+']) -> set ['+']
+                     | s when s.Equals (set ['0'; '0']) -> set ['0']
                      | _ -> failwith "signs not valid"
 
 let signEvalTimes n1 n2 = match (set [n1; n2]) with
                      | s when s.Equals (set ['-'; '-']) -> set ['+']
-                     | s when s.Equals (set ['-'; '0']) -> set ['0']
+                     | s when Set.contains '0' s -> set ['0']
+                     | s when s.Equals (set ['+'; '+']) -> set ['+']
                      | s when s.Equals (set ['-'; '+']) -> set ['-']
                      | _ -> failwith "signs not valid"
 
 // For assignment 5
 let sign a = if a > 0 then '+' else
                                  if a=0 then '0' else '-'
-let signx x  vars = let result = (getValueVars x vars)   
-                    match result with
-                    | Some x -> sign x
-                    | None -> failwith "unknown variable"      
+let signvar x  vars = let result = (getValueVars x vars)   
+                      match result with
+                      | Some x -> sign x
+                      | None -> failwith "unknown variable"     
+
+let rec signArr x i arrs = match i with
+                           | i when i < 0 -> set []
+                           | i -> let result = (getValueArrs x (i-1) arrs)
+                                  match result with
+                                  | Some x' -> Set.union (set [sign x']) (signArr x (i-1) arrs)
+                                  | None -> failwith "error"
 
 let signevalminus x y = 
     match x, y with 
@@ -419,8 +430,9 @@ let signevalminus x y =
     | x,y when (x='+' && y='-') -> set ['+']  
     | x,y when (x='+' && y='0') -> set ['+']
     | x,y when (x='+' && y='+') -> set ['-';'0';'+']
+    | _ -> failwith "signs not valid"
 
-let singevalDiv x y =
+let signevalDiv x y =
     match x,y with 
     | x,y when (x='-' && y='-') -> set ['+']  
     | x,y when (x='-' && y='0') -> set []
@@ -431,11 +443,56 @@ let singevalDiv x y =
     | x,y when (x='+' && y='-') -> set ['-']  
     | x,y when (x='+' && y='0') -> set []
     | x,y when (x='+' && y='+') -> set ['+']
+    | _ -> failwith "signs not valid"
 let rec helper x sety signfunction= 
         match sety with 
         | sety' when Set.isEmpty sety' -> set []
         | sety' ->  let element = sety'.MinimumElement
                     Set.union (helper x (sety'.Remove element) signfunction) (signfunction x element)
+
+let signEvalPow n1 n2 =
+    match (n1, n2) with
+    | ('-', '+') | ('-', '-')-> set ['-'; '+']
+    | ('+', '-') | ('+','+') -> set ['+']
+    | ('0', '+') -> set ['0']
+    | ('0', '0') | ('-', '0') | ('+', '0') -> set ['+']
+    | ('0', '-')  -> set []
+    | _ -> failwith "signs not valid"
+
+let signEvalEqual n1 n2 = 
+    match (n1, n2) with
+    | ('-', '-') | ('+', '+') -> set [true; false]
+    | ('-', '0') | ('-', '+') | ('0', '-') | ('0', '+') | ('+', '-') | ('+', '0') -> set [false]
+    | ('0', '0') -> set [true]
+    | _ -> failwith "signs not valid"
+
+let signEvalGreaterthan n1 n2 = 
+    match (n1, n2) with
+    | ('-', '-') | ('+', '+') -> set [true; false]
+    | ('-', '0') | ('-', '+') |  ('0', '+') | ('0', '0')  -> set [false]
+    | ('+', '-') | ('+', '0') | ('0', '-')-> set [true]
+    | _ -> failwith "signs not valid"
+
+let signEvalLessthan n1 n2 = 
+    match (n1, n2) with
+    | ('-', '-') | ('+', '+') -> set [true; false]
+    | ('-', '0') | ('-', '+') |  ('0', '+') -> set [true]
+    | ('+', '-') | ('+', '0') | ('0', '-') | ('0', '0') -> set [false]
+    | _ -> failwith "signs not valid"
+
+let signEvalLessthanorequal n1 n2 = 
+    match (n1, n2) with
+    | ('-', '-') | ('+', '+') -> set [true; false]
+    | ('-', '0') | ('-', '+') |  ('0', '+') | ('0', '0') -> set [true]
+    | ('+', '-') | ('+', '0') | ('0', '-')  -> set [false]
+    | _ -> failwith "signs not valid"
+
+let signEvalGreaterthanorequal n1 n2 = 
+    match (n1, n2) with
+    | ('-', '-') | ('+', '+') -> set [true; false]
+    | ('-', '0') | ('-', '+') |  ('0', '+')   -> set [false]
+    | ('+', '-') | ('+', '0') | ('0', '-') | ('0', '0')-> set [true]
+    | _ -> failwith "signs not valid"
 
 let rec signevalSets setx sety signfunction =
    match setx with 
