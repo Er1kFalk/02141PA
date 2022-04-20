@@ -355,27 +355,27 @@ let checkCommandType c =
     | PredCommand (_, _, _) -> true
     | _ -> false
 
-let run =
-    Console.WriteLine("Enter initial variables: ")
-    let (initVar,initArr,initeval) = evaluateCommand (parse (Console.ReadLine())) [] [] [] 0 50
-    Console.WriteLine((initVar,initArr))
-    Console.WriteLine ""
-    Console.WriteLine("Enter your favorite GCL expression: ")
-    let commands = parse (readAll (Console.ReadLine()) + "\n") // parse input
-    Console.WriteLine (commands) // print AST
-    Console.WriteLine ""
-    Console.WriteLine (prettyprintCommand commands) // print result parsed back
-    Console.WriteLine "" 
-    //print program graph
-    let result =pgc commands 1 1 [] 0 50 false
-    let endpoint = max2(result)  //last node used  
-    print (((0,1,"begin", checkCommandType commands)::result)@ [(endpoint,endpoint+1,"end", true)] ) // generates beginning node and endnode
-    Console.WriteLine "" 
-    //let  (vars, arrs,evaluationsteps:EvalList) = evaluateCommand commands initVar initArr [] 0 50
-    //printEvaliationList (List.rev evaluationsteps) result 1 // print the steps taken to reach the final values
-    //Console.WriteLine "" 
-    //Console.Write "Final variable values: "
-    //Console.WriteLine((vars,arrs))    // prints the final values 
+//let run =
+//    Console.WriteLine("Enter initial variables: ")
+//    let (initVar,initArr,initeval) = evaluateCommand (parse (Console.ReadLine())) [] [] [] 0 50
+//    Console.WriteLine((initVar,initArr))
+//    Console.WriteLine ""
+//    Console.WriteLine("Enter your favorite GCL expression: ")
+//    let commands = parse (readAll (Console.ReadLine()) + "\n") // parse input
+//    Console.WriteLine (commands) // print AST
+//    Console.WriteLine ""
+//    Console.WriteLine (prettyprintCommand commands) // print result parsed back
+//    Console.WriteLine "" 
+//    //print program graph
+//    let result =pgc commands 1 1 [] 0 50 false
+//    let endpoint = max2(result)  //last node used  
+//    print (((0,1,"begin", checkCommandType commands)::result)@ [(endpoint,endpoint+1,"end", true)] ) // generates beginning node and endnode
+//    Console.WriteLine "" 
+//    //let  (vars, arrs,evaluationsteps:EvalList) = evaluateCommand commands initVar initArr [] 0 50
+//    //printEvaliationList (List.rev evaluationsteps) result 1 // print the steps taken to reach the final values
+//    //Console.WriteLine "" 
+//    //Console.Write "Final variable values: "
+//    //Console.WriteLine((vars,arrs))    // prints the final values 
 let rec domP q p =  
     match p with
     | [] -> false
@@ -388,6 +388,7 @@ let rec build pg p spf=
     | q::qs when (domP q p)  -> build qs p (q::spf)
     | q::qs -> build qs p spf   
 
+// For assignment 5
 let signEvalPlus n1 n2 = match (set [n1; n2]) with
                      | s when s.Equals (set ['-']) -> set ['-'] 
                      | s when s.Equals (set ['-'; '0']) -> set ['-']
@@ -404,7 +405,7 @@ let signEvalTimes n1 n2 = match (set [n1; n2]) with
                      | s when s.Equals (set ['-'; '+']) -> set ['-']
                      | _ -> failwith "signs not valid"
 
-// For assignment 5
+
 let sign a = if a > 0 then '+' else
                                  if a=0 then '0' else '-'
 let signvar x  vars = let result = (getValueVars x vars)   
@@ -499,3 +500,39 @@ let rec signevalSets setx sety signfunction =
    | setx' when Set.isEmpty setx' -> set []
    | setx' ->  let element = setx'.MinimumElement
                Set.union  (signevalSets (setx'.Remove element) sety signfunction)  (helper element sety signfunction)
+
+let rec initialSignList inputstreng y name =
+    match inputstreng with
+    | [] -> failwith "something is wrong"
+    | s::s' when s = ' ' -> initialSignList s' y (name)
+    | s::s' when s = '=' -> (name, set s')::y
+    | s::s' -> initialSignList s' y (name @ [s])
+
+let rec parseString s x l =
+    match s with
+    | [] -> initialSignList x l []
+    | s::s' when s = ' ' -> parseString s' (x) l
+    | s::s' when s = ';' ->  Console.WriteLine s'
+                             parseString s' [] (initialSignList x l [])
+    | s::s' -> parseString s' (x @ [s]) l
+
+let getInput = 
+    Console.WriteLine "Enter initial abstract memory:"
+    let input = Console.ReadLine()
+    let charList = Array.toList (input.ToCharArray())
+    parseString charList [] []
+
+let signAlgorithm Q E mem = 
+    let w = mem
+    
+
+
+let signAnalysis =
+    let signs = getInput
+    Console.WriteLine signs
+    Console.WriteLine("Enter your favorite GCL expression: ")
+    let commands = parse (readAll (Console.ReadLine()) + "\n") // parse input
+    //print program graph
+    let result =pgc commands 1 1 [] 0 50 false
+    let endpoint = max2(result)  //last node used  
+    print (((0,1,"begin", checkCommandType commands)::result)@ [(endpoint,endpoint+1,"end", true)] )

@@ -5,6 +5,7 @@ type aexpr =
   | Num of (int)
   | X of (string)
   | X' of (string)
+  | S of seq<string>
   | Arr of (string * aexpr)
   | TimesExpr of (aexpr * aexpr)
   | DivExpr of (aexpr * aexpr)
