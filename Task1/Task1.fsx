@@ -406,8 +406,8 @@ let signEvalTimes n1 n2 = match (set [n1; n2]) with
                      | _ -> failwith "signs not valid"
 
 
-let sign a = if a > 0 then '+' else
-                                 if a=0 then '0' else '-'
+let sign a = if a > 0 then Set ['+'] else
+                                 if a=0 then Set ['0'] else Set ['-']
 let signvar x  vars = let result = (getValueVars x vars)   
                       match result with
                       | Some x -> sign x
@@ -505,7 +505,7 @@ let rec initialSignList inputstreng y name =
     match inputstreng with
     | [] -> failwith "something is wrong"
     | s::s' when s = ' ' -> initialSignList s' y (name)
-    | s::s' when s = '=' -> (name, set s')::y
+    | s::s' when s = '=' -> Set.add (String (Array.ofList name), set s') y
     | s::s' -> initialSignList s' y (name @ [s])
 
 let rec parseString s x l =
@@ -520,19 +520,67 @@ let getInput =
     Console.WriteLine "Enter initial abstract memory:"
     let input = Console.ReadLine()
     let charList = Array.toList (input.ToCharArray())
-    parseString charList [] []
+    let preliminaryList = parseString charList [] (Set [])
+    preliminaryList
 
-let signAlgorithm Q E mem = 
-    let w = mem
+
+
+
+let rec getNodes pg = 
+    match pg with
+    | [] -> Set []
+    | (n1, n2, _, _)::xs -> Set.add n2 (Set.add n1 (getNodes xs))
+    
+let rec getEdgesOutOfQ Q pg = 
+    match pg with
+    | [] -> Set []
+    | (n1, n2, label, _)::xs when n1 = Q -> Set.add (n1, label, n2) (getEdgesOutOfQ Q xs)
+    | _::xs -> getEdgesOutOfQ Q xs
+
+let rec setGetValue set value = 
+    match (Set.toList set) with
+    | [] -> failwith "error occurred"
+    | (var, set')::_ when value = var -> set'
+    | (_, _)::xs -> setGetValue (Set.ofList xs) value
+
+let rec useSignFunction alpha qstart qend mem vars arrs =
+    match parse alpha with
+    | Assign (var, value) -> Set.add (var, (sign (evalExpression value vars arrs))) (Set.remove (var, (setGetValue mem var)) mem)
+   
+let rec runthrough edges vars arrs workNodes analysisAssignment = 
+    if (Set.isEmpty edges) then analysisAssignment
+    else let edge1 = Set.minElement edges
+         let (qstart, alpha, qend) = edge1
+         let saq0 = useSignFunction alpha 0 0 (Map.find qstart analysisAssignment) vars arrs
+         let aq1 = (Map.find qend analysisAssignment)
+         if not (Set.isSubset saq0 aq1)
+         then runthrough (Set.remove edge1 edges) vars arrs (Set.union workNodes (Set [qend])) (Map.add qend (Set.union aq1 saq0) analysisAssignment)
+         else runthrough (Set.remove edge1 edges) vars arrs (workNodes) (analysisAssignment)
+ 
+let signAlgorithm Q pg mem vars arrs= 
+    let Q_without_qstart = Set.remove 0 Q
+    let map:Map<int, Set<(string*Set<char>)>> = Map.ofList []
+    let mutable analysisAssignment = Map.add 0 mem (Set.fold (fun m x -> Map.add x (Set []) m) map Q_without_qstart)
+    let workNodes = Set [0]
+    while not( Set.isEmpty workNodes) do 
+        let elem = Set.minElement workNodes
+        let newWorkNodes = Set.remove elem workNodes
+        let edgesOut = getEdgesOutOfQ elem pg
+        analysisAssignment = runthrough edgesOut vars arrs workNodes analysisAssignment
+    analysisAssignment
+
     
 
-
 let signAnalysis =
-    let signs = getInput
-    Console.WriteLine signs
+    let initialMemory = getInput
+    Console.WriteLine initialMemory
     Console.WriteLine("Enter your favorite GCL expression: ")
     let commands = parse (readAll (Console.ReadLine()) + "\n") // parse input
     //print program graph
     let result =pgc commands 1 1 [] 0 50 false
     let endpoint = max2(result)  //last node used  
-    print (((0,1,"begin", checkCommandType commands)::result)@ [(endpoint,endpoint+1,"end", true)] )
+    let pg = (((0,1,"begin", checkCommandType commands)::result)@ [(endpoint,endpoint+1,"end", true)] )
+    let nodesPg = getNodes pg
+    nodesPg
+    let analysis = signAlgorithm nodesPg pg initialMemory [] []
+    Console.WriteLine analysis
